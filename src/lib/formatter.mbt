@@ -20,15 +20,21 @@ fn Formatter::init!(
     iter = iter.drop(1)
     match c {
       '{' => {
-        self.strings.push(self.builder.to_string())
+        if not(self.builder.is_empty()) {
+          self.strings.push(self.builder.to_string())
+          self.builder.reset()
+        }
+        let mut len = 0
         self.format_specs.push(
-          String::from_iter(iter.take_while(fn(c) { c != '}' })),
+          String::from_iter(iter.take_while(fn(c) { 
+            len += 1
+            c != '}' })),
         )
+        iter = iter.drop(len)
         iterating_spec = true
-        self.builder.reset()
       }
       '}' =>
-        if iterating_spec || self.builder.is_empty() {
+        if iterating_spec && self.builder.is_empty() {
           iterating_spec = false
           continue
         } else {
@@ -37,11 +43,20 @@ fn Formatter::init!(
       _ => if not(iterating_spec) { self.builder.write_char(c) }
     }
   }
+  if iterating_spec {
+    raise UnmatchedCurlyBrace('{')
+  }
   if not(self.builder.is_empty()) {
     let string = self.builder.to_string()
     self.strings.push(string)
     self.builder.reset()
   }
+}
+
+fn reset(self : Formatter) -> Unit {
+  self.builder.reset()
+  self.strings.clear()
+  self.format_specs.clear()
 }
 
 ///|
@@ -155,7 +170,10 @@ fn parse_field!(self : Formatter, field : String) -> FormatField!FormatError {
 ///|
 fn format!(self : Formatter, args : Array[&Formattable]) -> String!FormatError {
   for i, fmt in self.format_specs {
-    self.write_string(self.strings.remove(0))
+    match self.strings.length() >= 1 {
+      true => self.write_string(self.strings.remove(0))
+      false => ()
+    }
     if fmt.is_empty() {
       guard let Some(obj) = args.get(i) else {
         None => raise ArgumentNotFound(arg_id=i.to_string())
