@@ -22,11 +22,7 @@ fn Formatter::init!(
       '{' => {
         self.strings.push(self.builder.to_string())
         self.format_specs.push(
-          String::from_iter(
-            iter.take_while(fn(c) {
-              c != '}'
-            }),
-          ),
+          String::from_iter(iter.take_while(fn(c) { c != '}' })),
         )
         iterating_spec = true
         self.builder.reset()
@@ -38,9 +34,7 @@ fn Formatter::init!(
         } else {
           raise UnmatchedCurlyBrace('}')
         }
-      _ => if not(iterating_spec) {
-        self.builder.write_char(c)
-      }
+      _ => if not(iterating_spec) { self.builder.write_char(c) }
     }
   }
   if not(self.builder.is_empty()) {
@@ -59,18 +53,18 @@ fn parse_field!(self : Formatter, field : String) -> FormatField!FormatError {
     let mut iter = spec.iter()
     let mut field = FormatField::default()
     l0~: for c in iter {
-      iter = iter.drop(1)
       let ch = c
       l1~: loop ch {
         '>' | '<' | '^' as ch => {
+          iter = iter.drop(1)
           guard let Ok(align) = @strconv.parse?(ch.to_string()) else {
             _ => raise InvalidFormatField(spec)
           }
-          field = { ..field, align, }
+          field = { ..field, align: Some(align) }
           break l0~
         }
         _ =>
-          match iter.peek() {
+          match iter.take(2).drop(1).peek() {
             Some('>' | '<' | '^' as align) => {
               field = { ..field, fill: ch }
               iter = iter.drop(1)
@@ -81,31 +75,53 @@ fn parse_field!(self : Formatter, field : String) -> FormatField!FormatError {
           }
       }
     }
-    for c in iter {
-      match c {
-        '0'..='9' => {
-          let mut len = 0
-          guard let Ok(width) = @strconv.parse?(
-            String::from_iter(
-              [
-                ..iter.take_while(fn(c) {
-                  len += 1
-                  match c {
-                    '0'..='9' => true
-                    _ => false
-                  }
-                }),
-              ],
-            ),
-          ) else {
-            _ => raise InvalidFormatField(spec)
-          }
-          field = { ..field, width, }
-          iter = iter.drop(len)
-          break
+    match iter.peek() {
+      Some('0'..='9') => {
+        let mut len = 0
+        guard let Ok(width) = @strconv.parse?(
+          String::from_iter(
+            [
+              ..iter.take_while(fn(c) {
+                len += 1
+                match c {
+                  '0'..='9' => true
+                  _ => false
+                }
+              }),
+            ],
+          ),
+        ) else {
+          _ => raise InvalidFormatField(spec)
         }
-        _ => iter = iter.drop(1)
+        field = { ..field, width, }
+        iter = iter.drop(len)
       }
+      _ => ()
+    }
+    match iter.peek() {
+      Some('.') => {
+        let mut len = 0
+        guard let Ok(precision) = @strconv.parse?(
+          String::from_iter(
+            [
+              ..iter
+              .drop(1)
+              .take_while(fn(c) {
+                len += 1
+                match c {
+                  '0'..='9' => true
+                  _ => false
+                }
+              }),
+            ],
+          ),
+        ) else {
+          _ => raise InvalidFormatField(spec)
+        }
+        field = { ..field, precision: Some(precision) }
+        iter = iter.drop(len)
+      }
+      _ => ()
     }
     field
   }
