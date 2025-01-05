@@ -8,4 +8,6 @@ test "format" {
   inspect!(@lib.format!("{:.0}", [12.12]), content="12")
   inspect!(@lib.format!("{:.3}", [11.4514]), content="11.451")
   inspect!(@lib.format!("{:.6}", [11.4514]), content="11.451400")
+  inspect!(@lib.format!("{:+}", [12]), content="+12")
+  inspect!(@lib.format!("{0:-} {0:-}", [12, -12]), content="12 -12")
 }

@@ -1,15 +1,15 @@
 ///|
 pub(open) trait Formattable: Show {
-  format(Self, FormatField?) -> String
+  format(Self, FormatField?) -> String!FormatError
   // TODO: Consider moving it to a separate trait?
-  pretty_format(Self, FormatField?) -> String
+  pretty_format(Self, FormatField?) -> String!FormatError
 }
 
 ///|
 impl Formattable with format(self, _) { self.to_string() }
 
 ///|
-impl Formattable with pretty_format(self, _field) { self.format(_field) }
+impl Formattable with pretty_format(self, _field) { self.format!(_field) }
 
 ///|
 struct Formatter {
@@ -52,9 +52,19 @@ struct FormatField {
   align : Align?
   width : Int
   precision : Int?
+  sign : Char?
+  type_flag : Char?
 } derive(Show, Eq)
 
 ///|
 impl Default for FormatField with default() {
-  { arg_id: None, fill: ' ', align: None, width: 0, precision: None }
+  {
+    arg_id: None,
+    fill: ' ',
+    align: None,
+    width: 0,
+    precision: None,
+    sign: None,
+    type_flag: None,
+  }
 }

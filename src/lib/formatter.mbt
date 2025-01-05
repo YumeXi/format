@@ -20,15 +20,16 @@ fn Formatter::init!(
     iter = iter.drop(1)
     match c {
       '{' => {
-        if not(self.builder.is_empty()) {
-          self.strings.push(self.builder.to_string())
-          self.builder.reset()
-        }
+        self.strings.push(self.builder.to_string())
+        self.builder.reset()
         let mut len = 0
         self.format_specs.push(
-          String::from_iter(iter.take_while(fn(c) { 
-            len += 1
-            c != '}' })),
+          String::from_iter(
+            iter.take_while(fn(c) {
+              len += 1
+              c != '}'
+            }),
+          ),
         )
         iter = iter.drop(len)
         iterating_spec = true
@@ -53,6 +54,7 @@ fn Formatter::init!(
   }
 }
 
+///|
 fn reset(self : Formatter) -> Unit {
   self.builder.reset()
   self.strings.clear()
@@ -61,6 +63,7 @@ fn reset(self : Formatter) -> Unit {
 
 ///|
 fn parse_field!(self : Formatter, field : String) -> FormatField!FormatError {
+  self |> ignore
   if field.is_blank() {
     raise InvalidFormatField(field)
   }
@@ -90,6 +93,19 @@ fn parse_field!(self : Formatter, field : String) -> FormatField!FormatError {
           }
       }
     }
+    // Parse sign
+    match iter.peek() {
+      Some('+') => {
+        iter = iter.drop(1)
+        field = { ..field, sign: Some('+') }
+      }
+      Some('-') => {
+        iter = iter.drop(1)
+        field = { ..field, sign: Some('-') }
+      }
+      _ => ()
+    }
+    // Parse width
     match iter.peek() {
       Some('0'..='9') => {
         let mut len = 0
@@ -113,6 +129,7 @@ fn parse_field!(self : Formatter, field : String) -> FormatField!FormatError {
       }
       _ => ()
     }
+    // Parse precision
     match iter.peek() {
       Some('.') => {
         let mut len = 0
@@ -135,6 +152,15 @@ fn parse_field!(self : Formatter, field : String) -> FormatField!FormatError {
         }
         field = { ..field, precision: Some(precision) }
         iter = iter.drop(len)
+      }
+      _ => ()
+    }
+    iter = iter.drop(1)
+    // Parse type flag
+    match iter.peek() {
+      Some(c) => {
+        iter = iter.drop(1)
+        field = { ..field, type_flag: Some(c) }
       }
       _ => ()
     }
@@ -178,13 +204,13 @@ fn format!(self : Formatter, args : Array[&Formattable]) -> String!FormatError {
       guard let Some(obj) = args.get(i) else {
         None => raise ArgumentNotFound(arg_id=i.to_string())
       }
-      self.write_string(obj.format(None))
+      self.write_string(obj.format!(None))
     } else {
       let field = self.parse_field!(fmt)
       guard let Some(obj) = args.get(field.arg_id.or(i)) else {
         None => raise ArgumentNotFound(arg_id=i.to_string())
       }
-      self.write_string(obj.format(Some(field)))
+      self.write_string(obj.format!(Some(field)))
     }
   }
   if not(self.strings.is_empty()) {

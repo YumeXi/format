@@ -14,18 +14,28 @@ test "parse '{' '}'" {
 test "parse [[fill]align][width]" {
   let formatter = Formatter::new()
   assert_eq!(formatter.parse_field!(":->"), {
-    arg_id: None,
+    ..FormatField::default(),
     fill: '-',
     align: Some(Right),
-    width: 0,
-    precision: None,
   })
   assert_eq!(formatter.parse_field!(":->10"), {
-    arg_id: None,
+    ..FormatField::default(),
     fill: '-',
     align: Some(Right),
     width: 10,
-    precision: None,
+  })
+}
+
+test "parse [sign]" {
+  let formatter = Formatter::new()
+  assert_eq!(formatter.parse_field!(":+"), {
+    ..FormatField::default(),
+    sign: Some('+'),
+  })
+  assert_eq!(formatter.parse_field!(":-.0"), {
+    ..FormatField::default(),
+    sign: Some('-'),
+    precision: Some(0),
   })
 }
 
