@@ -1,3 +1,4 @@
+///|
 fn to_idx(self : Emphasis) -> (Int, Int) {
   match self {
     Bold => (1, 22)

@@ -6,7 +6,7 @@ pub struct Style {
 } derive(Show)
 
 ///|
-trait Styled {
+pub(open) trait Styled {
   style(Self) -> Style
 }
 

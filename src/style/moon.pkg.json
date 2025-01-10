@@ -10,5 +10,11 @@
         "path": "YumeXi/format/lib",
         "alias": "base"
       }
+    ],
+    "test-import": [
+      {
+        "path": "YumeXi/format/lib",
+        "alias": "base"
+      }
     ]
 }

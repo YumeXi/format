@@ -19,6 +19,7 @@ fn to_idx(self : FgColor) -> Int {
     BrightWhite => 97
   }
 }
+
 ///|
 fn to_idx(self : BgColor) -> Int {
   match self._ {

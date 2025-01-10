@@ -29,22 +29,29 @@ pub fn lor[T : @base.Formattable](
 test {
   let _ = fg(Red) | bg(Blue) | 1.23
   let _ = fg(Red) | emph(Bold) | "test"
+
 }
 
-impl[T : @base.Formattable] @base.Formattable for StyledArg[T] with format(self, field) {
+///|
+impl[T : @base.Formattable] @base.Formattable for StyledArg[T] with format(
+  self,
+  field
+) {
   let start = StringBuilder::new()
   start.write_string("\x1b[")
   let end = StringBuilder::new()
   match self.0.bg {
     Some(color) => {
       start.write_object(color.to_idx())
-      start.write_char(';')
       end.write_string("\x1b[49m")
     }
     None => ()
   }
   match self.0.fg {
     Some(color) => {
+      if not(self.0.bg.is_empty()) {
+        start.write_char(';')
+      }
       start.write_object(color.to_idx())
       end.write_string("\x1b[39m")
     }
@@ -53,6 +60,9 @@ impl[T : @base.Formattable] @base.Formattable for StyledArg[T] with format(self,
   match self.0.emphasis {
     Some(emphasis) => {
       let (begin_idx, end_idx) = emphasis.to_idx()
+      if not(self.0.bg.is_empty() && self.0.fg.is_empty()) {
+        start.write_char(';')
+      }
       start.write_object(begin_idx)
       end.write_string("\x1b[\{end_idx}m")
     }
