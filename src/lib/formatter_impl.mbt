@@ -3,11 +3,11 @@ fn align(str : String, width~ : Int, align~ : Align, fill~ : Char) -> String {
   let len = str.length()
   match align {
     Left =>
-      fill.to_string().repeat(if width - len < 0 { 0 } else { width - len }) +
-      str
-    Right =>
       str +
       fill.to_string().repeat(if width - len < 0 { 0 } else { width - len })
+    Right =>
+      fill.to_string().repeat(if width - len < 0 { 0 } else { width - len }) +
+      str
     Center => {
       let left_padding = fill
         .to_string()
