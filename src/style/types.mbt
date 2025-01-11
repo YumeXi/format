@@ -2,7 +2,7 @@
 pub struct Style {
   bg : BgColor?
   fg : FgColor?
-  emphasis : Emphasis?
+  emphasis : Array[Emphasis]
 } derive(Show)
 
 ///|
@@ -17,7 +17,7 @@ pub type StyledArg[T] (Style, T) derive(Show)
 pub impl Styled for Style with style(self) { self }
 
 ///|
-impl Styled with style(_) { { bg: None, fg: None, emphasis: None } }
+impl Styled with style(_) { { bg: None, fg: None, emphasis: [] } }
 
 ///|
 pub impl[T] Styled for StyledArg[T] with style(self) { self.0 }
@@ -40,7 +40,7 @@ pub(all) enum Color {
   BrightMagenta
   BrightCyan
   BrightWhite
-} derive(Show)
+} derive(Show, Eq)
 
 ///|
 type FgColor Color derive(Show)
@@ -55,22 +55,22 @@ pub(all) enum Emphasis {
   Italic
   Underline
   Blink
-  Reverse
+  Inverse
   Hidden
   Strikethrough
-} derive(Show)
+} derive(Show, Eq)
 
 ///|
 pub fn fg(color : Color) -> Style {
-  { bg: None, fg: Some(color), emphasis: None }
+  { bg: None, fg: Some(color), emphasis: [] }
 }
 
 ///|
 pub fn bg(color : Color) -> Style {
-  { bg: Some(color), fg: None, emphasis: None }
+  { bg: Some(color), fg: None, emphasis: [] }
 }
 
 ///|
 pub fn emph(emphasis : Emphasis) -> Style {
-  { bg: None, fg: None, emphasis: Some(emphasis) }
+  { bg: None, fg: None, emphasis: [emphasis] }
 }

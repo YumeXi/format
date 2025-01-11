@@ -6,7 +6,7 @@ fn to_idx(self : Emphasis) -> (Int, Int) {
     Italic => (3, 23)
     Underline => (4, 24)
     Blink => (5, 25)
-    Reverse => (7, 27)
+    Inverse => (7, 27)
     Hidden => (8, 28)
     Strikethrough => (9, 29)
   }

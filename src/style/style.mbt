@@ -10,20 +10,17 @@ pub fn lor[T : Styled](self : Style, other : T) -> StyledArg[T] {
       Some(color) => Some(color)
       None => other_style.fg
     },
-    emphasis: match self.emphasis {
-      Some(emphasis) => Some(emphasis)
-      None => other_style.emphasis
-    },
+    emphasis: self.emphasis + other_style.emphasis
   }
   (new_style, other)
 }
 
 ///|
-pub fn lor[T : @base.Formattable](
+pub fn lor[T : @base.Formattable + Styled](
   self : StyledArg[Style],
   other : T
 ) -> StyledArg[T] {
-  (self.style(), other)
+  ((self.style() | other.style()).style(), other)
 }
 
 test {
@@ -58,15 +55,22 @@ impl[T : @base.Formattable] @base.Formattable for StyledArg[T] with format(
     None => ()
   }
   match self.0.emphasis {
-    Some(emphasis) => {
-      let (begin_idx, end_idx) = emphasis.to_idx()
+    [] => ()
+    [_, ..] => {
+      
       if not(self.0.bg.is_empty() && self.0.fg.is_empty()) {
         start.write_char(';')
       }
+      let (begin_idx, end_idx) = self.0.emphasis[0].to_idx()
       start.write_object(begin_idx)
       end.write_string("\x1b[\{end_idx}m")
+      for emphasis in self.0.emphasis[1:] {
+        start.write_char(';')
+        let (begin_idx, end_idx) = emphasis.to_idx()
+        start.write_object(begin_idx)
+        end.write_string("\x1b[\{end_idx}m")
+      }
     }
-    None => ()
   }
   start.write_char('m')
   start.to_string() + self.1.format!(field) + end.to_string()
