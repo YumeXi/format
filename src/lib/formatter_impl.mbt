@@ -253,7 +253,9 @@ pub impl Formattable for Double with format!(self, field) {
   match field {
     Some(field) => {
       match field.type_flag {
-        Some('e' | 'E' as flag) => result = double_to_string(self, flag)
+        Some('e' | 'E' as flag) => {
+          result = double_to_string(self, flag)
+        }
         Some(flag) =>
           raise InvalidFormatField("Invalid type flag '\{flag}' for Double")
         None => ()

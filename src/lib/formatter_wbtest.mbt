@@ -5,9 +5,14 @@ test "parse '{' '}'" {
   assert_true!(formatter.init?("{ }").is_ok())
   formatter.reset()
   assert_true!(formatter.init?("{").is_err())
+  formatter.reset()
   assert_true!(formatter.init?("}").is_err())
   formatter.reset()
   assert_true!(formatter.init?("{:0}").is_ok())
+  formatter.reset()
+  assert_true!(formatter.init?("Hello {}!").is_ok())
+  formatter.reset()
+  assert_true!(formatter.init?("{0:-} {0:-}").is_ok())
   formatter.reset()
 }
 

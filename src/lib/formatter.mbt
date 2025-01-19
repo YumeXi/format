@@ -13,35 +13,30 @@ fn Formatter::init!(
   self : Formatter,
   format_string : String
 ) -> Unit!FormatError {
-  let mut iter = format_string.iter()
   // TODO: Rewrite in a more functional style
+  let temp_builder = StringBuilder::new()
   let mut iterating_spec = false
-  for c in iter {
-    iter = iter.drop(1)
+  for c in format_string {
     match c {
       '{' => {
+        iterating_spec = true
         self.strings.push(self.builder.to_string())
         self.builder.reset()
-        let mut len = 0
-        self.format_specs.push(
-          String::from_iter(
-            iter.take_while(fn(c) {
-              len += 1
-              c != '}'
-            }),
-          ),
-        )
-        iter = iter.drop(len)
-        iterating_spec = true
       }
       '}' =>
-        if iterating_spec && self.builder.is_empty() {
+        if iterating_spec {
+          self.format_specs.push(temp_builder.to_string())
+          temp_builder.reset()
           iterating_spec = false
-          continue
         } else {
-          raise UnmatchedCurlyBrace('}')
+          raise UnmatchedCurlyBrace(c)
         }
-      _ => if not(iterating_spec) { self.builder.write_char(c) }
+      _ =>
+        if iterating_spec {
+          temp_builder.write_char(c)
+        } else {
+          self.builder.write_char(c)
+        }
     }
   }
   if iterating_spec {
