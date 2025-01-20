@@ -7,8 +7,8 @@ impl[T : @base.Formattable] @base.Formattable for StyledArg[T] with format(
   start.write_string("\x1b[")
   let end = StringBuilder::new()
   match self.0.bg {
-    Some(BgColor(Color16(_)) as color) => {
-      start.write_object(color.to_idx())
+    Some(BgColor(Color16(color))) => {
+      start.write_object(BgColor(Color16(color)).to_idx())
       end.write_string("\x1b[49m")
     }
     Some(BgColor(Color256(idx))) => {
@@ -22,11 +22,11 @@ impl[T : @base.Formattable] @base.Formattable for StyledArg[T] with format(
     None => ()
   }
   match self.0.fg {
-    Some(FgColor(Color16(_)) as color) => {
+    Some(FgColor(Color16(color))) => {
       if not(self.0.bg.is_empty()) {
         start.write_char(';')
       }
-      start.write_object(color.to_idx())
+      start.write_object(FgColor(Color16(color)).to_idx())
       end.write_string("\x1b[39m")
     }
     Some(FgColor(Color256(idx))) => {
