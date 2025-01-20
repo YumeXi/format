@@ -23,7 +23,7 @@ impl Styled with style(_) { { bg: None, fg: None, emphasis: [] } }
 pub impl[T] Styled for StyledArg[T] with style(self) { self.0 }
 
 ///|
-pub(all) enum Color {
+pub(all) enum Color16 {
   Black
   Red
   Green
@@ -40,6 +40,13 @@ pub(all) enum Color {
   BrightMagenta
   BrightCyan
   BrightWhite
+} derive(Show, Eq)
+
+///|
+pub(all) enum Color {
+  Color16(Color16)
+  Color256(Int)
+  TrueColor(Int, Int, Int)
 } derive(Show, Eq)
 
 ///|
@@ -61,13 +68,13 @@ pub(all) enum Emphasis {
 } derive(Show, Eq)
 
 ///|
-pub fn fg(color : Color) -> Style {
-  { bg: None, fg: Some(color), emphasis: [] }
+pub fn fg(color : Color16) -> Style {
+  { bg: None, fg: Some(Color16(color)), emphasis: [] }
 }
 
 ///|
-pub fn bg(color : Color) -> Style {
-  { bg: Some(color), fg: None, emphasis: [] }
+pub fn bg(color : Color16) -> Style {
+  { bg: Some(Color16(color)), fg: None, emphasis: [] }
 }
 
 ///|

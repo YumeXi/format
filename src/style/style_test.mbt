@@ -11,7 +11,9 @@ test {
 
 test {
   inspect!(
-    @base.format!("{}", [emph(Hidden) | emph(Underline) | emph(Bold) | "Multi-emphasis Test"]),
-    content="\x1b[8;4;1mMulti-emphasis Test\x1b[28m\x1b[24m\x1b[22m"
+    @base.format!("{}", [
+      emph(Hidden) | emph(Underline) | emph(Bold) | "Multi-emphasis Test",
+    ]),
+    content="\x1b[8;4;1mMulti-emphasis Test\x1b[28m\x1b[24m\x1b[22m",
   )
 }
