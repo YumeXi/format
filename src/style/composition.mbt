@@ -28,3 +28,22 @@ test {
   let _ = fg(Red) | emph(Bold) | "test"
 
 }
+
+///|
+pub impl ToColor for Color with to_color(self) { self }
+
+///|
+pub impl ToColor for Color16 with to_color(self) { Color16(self) }
+
+///|
+pub impl ToColor for Int with to_color(self) { Color256(self) }
+
+///|
+pub impl ToColor for (Int, Int, Int) with to_color(self) {
+  TrueColor(self.0, self.1, self.2)
+}
+
+test {
+  let _ = fg(Red) | bg((255, 255, 255)) | 1.23
+
+}

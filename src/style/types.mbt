@@ -50,10 +50,10 @@ pub(all) enum Color {
 } derive(Show, Eq)
 
 ///|
-type FgColor Color derive(Show)
+pub type FgColor Color derive(Show)
 
 ///|
-type BgColor Color derive(Show)
+pub type BgColor Color derive(Show)
 
 ///|
 pub(all) enum Emphasis {
@@ -68,16 +68,21 @@ pub(all) enum Emphasis {
 } derive(Show, Eq)
 
 ///|
-pub fn fg(color : Color16) -> Style {
-  { bg: None, fg: Some(Color16(color)), emphasis: [] }
+pub fn fg[T : ToColor](color : T) -> Style {
+  { bg: None, fg: Some(color.to_color()), emphasis: [] }
 }
 
 ///|
-pub fn bg(color : Color16) -> Style {
-  { bg: Some(Color16(color)), fg: None, emphasis: [] }
+pub fn bg[T : ToColor](color : T) -> Style {
+  { bg: Some(color.to_color()), fg: None, emphasis: [] }
 }
 
 ///|
 pub fn emph(emphasis : Emphasis) -> Style {
   { bg: None, fg: None, emphasis: [emphasis] }
+}
+
+///|
+trait ToColor {
+  to_color(Self) -> Color
 }
