@@ -19,11 +19,11 @@ struct Formatter {
 } derive(Show)
 
 ///|
-type! FormatError {
+pub type! FormatError {
   ArgumentNotFound(arg_id~ : String)
   UnmatchedCurlyBrace(Char)
   InvalidFormatField(String)
-}
+} derive(Show)
 
 ///|
 enum Align {
