@@ -1,14 +1,4 @@
 {
-    "import": [
-      {
-        "path": "YumeXi/format/lib",
-        "alias": "base"
-      }
-    ],
-    "wbtest-import": [
-      {
-        "path": "YumeXi/format/lib",
-        "alias": "base"
-      }
-    ]
+    "import": ["YumeXi/format/base"],
+    "wbtest-import": ["YumeXi/format/base"]
 }
