@@ -1,0 +1,92 @@
+package YumeXi/format/style
+
+alias @YumeXi/format/base as @base
+
+// Values
+fn bg[T : ToColor](T) -> Style
+
+fn emph(Emphasis) -> Style
+
+fn fg[T : ToColor](T) -> Style
+
+// Types and methods
+pub type BgColor Color
+impl Show for BgColor
+
+pub(all) enum Color {
+  Color16(Color16)
+  Color256(Int)
+  TrueColor(Int, Int, Int)
+}
+impl ToColor for Color
+impl Eq for Color
+impl Show for Color
+
+pub(all) enum Color16 {
+  Black
+  Red
+  Green
+  Yellow
+  Blue
+  Magenta
+  Cyan
+  White
+  BrightBlack
+  BrightRed
+  BrightGreen
+  BrightYellow
+  BrightBlue
+  BrightMagenta
+  BrightCyan
+  BrightWhite
+}
+impl ToColor for Color16
+impl Eq for Color16
+impl Show for Color16
+
+pub(all) enum Emphasis {
+  Bold
+  Faint
+  Italic
+  Underline
+  Blink
+  Inverse
+  Hidden
+  Strikethrough
+}
+impl Eq for Emphasis
+impl Show for Emphasis
+
+pub type FgColor Color
+impl Show for FgColor
+
+pub struct Style {
+  bg : BgColor?
+  fg : FgColor?
+  emphasis : Array[Emphasis]
+}
+impl Style {
+  lor[T : Styled](Self, T) -> StyledArg[T]
+}
+impl Styled for Style
+impl Show for Style
+
+pub type StyledArg (Style, T)
+impl StyledArg {
+  lor[T : @base.Formattable + Styled](Self[Style], T) -> Self[T]
+}
+impl[T] Styled for StyledArg[T]
+impl[T : Show] Show for StyledArg[T]
+
+// Type aliases
+
+// Traits
+pub(open) trait Styled {
+  style(Self) -> Style
+}
+impl Styled::style
+
+trait ToColor
+impl ToColor for Int
+impl ToColor for (Int, Int, Int)
+

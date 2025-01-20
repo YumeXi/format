@@ -1,0 +1,47 @@
+package YumeXi/format/base
+
+// Values
+fn format(String, Array[&Formattable]) -> String
+
+fn try_format(String, Array[&Formattable]) -> String!FormatError
+
+// Types and methods
+type Align
+impl Eq for Align
+impl Show for Align
+
+pub type! FormatError {
+  ArgumentNotFound(String)
+  UnmatchedCurlyBrace(Char)
+  InvalidFormatField(String)
+}
+impl Show for FormatError
+
+type FormatField
+impl Eq for FormatField
+impl Show for FormatField
+
+type Formatter
+impl Formatter {
+  new() -> Self
+}
+impl Show for Formatter
+
+// Type aliases
+
+// Traits
+pub(open) trait Formattable : Show {
+  format(Self, FormatField?) -> String!FormatError
+  pretty_format(Self, FormatField?) -> String!FormatError
+}
+impl Formattable::format
+impl Formattable::pretty_format
+impl Formattable for Int
+impl Formattable for Int64
+impl Formattable for UInt
+impl Formattable for UInt64
+impl Formattable for Float
+impl Formattable for Double
+impl Formattable for String
+impl Formattable for BigInt
+

@@ -57,6 +57,18 @@ fn reset(self : Formatter) -> Unit {
 }
 
 ///|
+/// A format field follows the syntax
+/// `{[arg_id][:[[fill]align][sign][width][.precision][type]]}`, where:
+///  - `arg_id` : Index of the argument to format
+///  - `fill` : Character to use for padding (default: ' ')
+///  - `align` : Alignment specifier (`<` for left, `>` for right, `^`
+/// for center)
+///  - `sign` : Sign specifier (`+` to show plus for positive numbers,
+/// and `-` to show minus for negative numbers)
+///  - `width` : Minimum field width
+///  - `precision` : Precision of decimal
+///  - `type` : Type specifier (e.g., 'x' for hexadecimal, 'e' for
+/// scientific notation)
 fn parse_field!(self : Formatter, field : String) -> FormatField!FormatError {
   self |> ignore
   if field.is_blank() {
@@ -189,7 +201,10 @@ fn parse_field!(self : Formatter, field : String) -> FormatField!FormatError {
 }
 
 ///|
-fn Formatter::format!(self : Formatter, args : Array[&Formattable]) -> String!FormatError {
+fn Formatter::format!(
+  self : Formatter,
+  args : Array[&Formattable]
+) -> String!FormatError {
   for i, fmt in self.format_specs {
     match self.strings.length() >= 1 {
       true => self.write_string(self.strings.remove(0))

@@ -135,7 +135,11 @@ pub impl Formattable for Int64 with format(self, field) {
       }
       match field.sign {
         Some('+') => if self >= 0 { result = "+" + result }
-        Some('-') => ()
+        Some('-') =>
+          if self < 0 && not(result.starts_with("-")) {
+            // Add a negative sign if the result doesn't already have one
+            result = "-" + result
+          }
         Some(_) => abort("unreachable")
         None => ()
       }
@@ -236,10 +240,8 @@ fn double_to_string(n : Double, type_flag : Char) -> String {
         n *= 10.0
         exponent -= 1
       }
-
-      // 将 n 转换为科学计数法尾数
-      let mantissa = "\{n}" // 保留 6 位小数精度
-      let mantissa = mantissa.trim_end("0").trim_end(".") // 去掉多余的零
+      let mantissa = "\{n}"
+      let mantissa = mantissa.trim_end("0").trim_end(".")
       let sign = if negative { "-" } else { "" }
       "\{sign}\{mantissa}e\{exponent}"
     }
@@ -253,16 +255,17 @@ pub impl Formattable for Double with format!(self, field) {
   match field {
     Some(field) => {
       match field.type_flag {
-        Some('e' | 'E' as flag) => {
-          result = double_to_string(self, flag)
-        }
+        Some('e' | 'E' as flag) => result = double_to_string(self, flag)
         Some(flag) =>
           raise InvalidFormatField("Invalid type flag '\{flag}' for Double")
         None => ()
       }
       match field.sign {
         Some('+') => if self >= 0 { result = "+" + result }
-        Some('-') => ()
+        Some('-') =>
+          if self < 0 && not(result.starts_with("-")) {
+            result = "-" + result
+          }
         Some(_) => abort("unreachable")
         None => ()
       }
@@ -318,7 +321,10 @@ pub impl Formattable for BigInt with format(self, field) {
       }
       match field.sign {
         Some('+') => if self >= 0 { result = "+" + result }
-        Some('-') => ()
+        Some('-') =>
+          if self < 0 && not(result.starts_with("-")) {
+            result = "-" + result
+          }
         Some(_) => abort("unreachable")
         None => ()
       }
