@@ -42,3 +42,11 @@ pub fn format(format_string : String, args : Array[&Formattable]) -> String {
     Err(err) => abort(err.to_string())
   }
 }
+
+///|
+fn println_mono(s : String) -> Unit = "%println"
+
+///|
+pub fn print(format_string : String, args : Array[&Formattable]) -> Unit {
+  println_mono(format(format_string, args))
+}
