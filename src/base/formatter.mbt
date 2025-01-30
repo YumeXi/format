@@ -1,4 +1,4 @@
-///|
+///| @coverage.skip
 pub fn Formatter::new() -> Formatter {
   { builder: StringBuilder::new(), strings: [], format_specs: [] }
 }

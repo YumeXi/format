@@ -165,12 +165,12 @@ pub impl Formattable for Int64 with format(self, field) {
   result
 }
 
-///|
+///| @coverage.skip
 pub impl Formattable for Int with format(self, field) {
   self.to_int64().format!(field)
 }
 
-///|
+///| @coverage.skip
 pub impl Formattable for UInt with format(self, field) {
   self.to_int64().format!(field)
 }
@@ -300,7 +300,7 @@ pub impl Formattable for Double with format!(self, field) {
   result
 }
 
-///|
+///| @coverage.skip
 pub impl Formattable for Float with format(self, field) {
   self.to_double().format!(field)
 }

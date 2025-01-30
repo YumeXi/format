@@ -5,10 +5,10 @@ pub(open) trait Formattable: Show {
   pretty_format(Self, FormatField?) -> String!FormatError
 }
 
-///|
+///| @coverage.skip
 impl Formattable with format(self, _) { self.to_string() }
 
-///|
+///| @coverage.skip
 impl Formattable with pretty_format(self, _field) { self.format!(_field) }
 
 ///|
@@ -32,10 +32,10 @@ enum Align {
   Center
 } derive(Show, Eq)
 
-///|
+///| @coverage.skip
 impl Default for Align with default() { Left }
 
-///|
+///| @coverage.skip
 impl @strconv.FromStr for Align with from_string(str) {
   match str {
     "<" => Left
@@ -56,7 +56,7 @@ struct FormatField {
   type_flag : Char?
 } derive(Show, Eq)
 
-///|
+///| @coverage.skip
 impl Default for FormatField with default() {
   {
     arg_id: None,

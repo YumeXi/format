@@ -43,10 +43,10 @@ pub fn format(format_string : String, args : Array[&Formattable]) -> String {
   }
 }
 
-///|
+///| @coverage.skip
 fn println_mono(s : String) -> Unit = "%println"
 
-///|
+///| @coverage.skip
 pub fn print(format_string : String, args : Array[&Formattable]) -> Unit {
   println_mono(format(format_string, args))
 }

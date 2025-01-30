@@ -3,6 +3,8 @@ package YumeXi/format/base
 // Values
 fn format(String, Array[&Formattable]) -> String
 
+fn print(String, Array[&Formattable]) -> Unit
+
 fn try_format(String, Array[&Formattable]) -> String!FormatError
 
 // Types and methods
