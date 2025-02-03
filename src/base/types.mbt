@@ -1,15 +1,10 @@
 ///|
 pub(open) trait Formattable: Show {
   format(Self, FormatField?) -> String!FormatError
-  // TODO: Consider moving it to a separate trait?
-  pretty_format(Self, FormatField?) -> String!FormatError
 }
 
 ///| @coverage.skip
 impl Formattable with format(self, _) { self.to_string() }
-
-///| @coverage.skip
-impl Formattable with pretty_format(self, _field) { self.format!(_field) }
 
 ///|
 struct Formatter {
