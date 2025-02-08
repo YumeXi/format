@@ -40,7 +40,7 @@ test {
 
 The `prettier` package provides pretty printing facilities.
 
-We can implement `prettify` method to format a value as a document, and using combinator to build up the document.
+We can implement the `Prettifiable` trait with `prettify` method to format a value as a document, and using combinator to build up the document.
 
 For example:
 ```moonbit
