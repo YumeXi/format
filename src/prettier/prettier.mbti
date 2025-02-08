@@ -1,0 +1,60 @@
+package YumeXi/format/prettier
+
+alias @YumeXi/format/base as @base
+
+// Values
+fn break_with(String) -> Doc
+
+fn empty() -> Doc
+
+fn format(String, Array[&Prettifiable]) -> String
+
+fn group(Doc) -> Doc
+
+let hardline : Doc
+
+fn intersperse(Doc, Array[Doc]) -> Doc
+
+fn line() -> Doc
+
+fn nest(indent~ : Int = .., Doc) -> Doc
+
+fn space() -> Doc
+
+fn text(String) -> Doc
+
+// Types and methods
+pub(all) enum Doc {
+  Break(String)
+  Text(String)
+  Concat(Doc, Doc)
+  Group(Doc)
+  Nest(Int, Doc)
+}
+impl Doc {
+  op_add(Self, Self) -> Self
+}
+impl @base.Formattable for Doc
+impl Prettifiable for Doc
+impl Show for Doc
+
+pub enum Mode {
+  Flat
+  Break
+}
+impl Show for Mode
+
+type SimplifiedDoc
+impl Show for SimplifiedDoc
+
+impl @base.Formattable for &Prettifiable
+
+// Type aliases
+
+// Traits
+pub(open) trait Prettifiable : @base.Formattable {
+  prettify(Self) -> Doc
+}
+impl Prettifiable for Int
+impl Prettifiable for String
+
