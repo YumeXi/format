@@ -1,5 +1,5 @@
 ///|
-let hardline : Doc = Break("\n")
+pub let hardline : Doc = Break("\n")
 
 ///|
 pub fn empty() -> Doc {
@@ -17,12 +17,12 @@ pub fn nest(indent~ : Int = 2, doc : Doc) -> Doc {
 }
 
 ///|
-pub fn line_break() -> Doc {
+pub fn line() -> Doc {
   Break("\n")
 }
 
 ///|
-pub fn space_break() -> Doc {
+pub fn space() -> Doc {
   Break(" ")
 }
 
@@ -40,6 +40,6 @@ pub fn group(doc : Doc) -> Doc {
 pub fn intersperse(sep : Doc, docs : Array[Doc]) -> Doc {
   match docs {
     [] => empty()
-    [x, .. xs] => xs.iter().fold(init=x, fn(l, r) { Concat(l, Concat(sep, r)) })
+    [x, .. xs] => xs.fold(init=x, fn(l, r) { l + sep + r })
   }
 }

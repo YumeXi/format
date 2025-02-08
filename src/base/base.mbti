@@ -20,6 +20,11 @@ pub type! FormatError {
 impl Show for FormatError
 
 type FormatField
+impl FormatField {
+  precision(Self) -> Int?
+  width(Self) -> Int
+}
+impl Default for FormatField
 impl Eq for FormatField
 impl Show for FormatField
 
@@ -34,10 +39,8 @@ impl Show for Formatter
 // Traits
 pub(open) trait Formattable : Show {
   format(Self, FormatField?) -> String!FormatError
-  pretty_format(Self, FormatField?) -> String!FormatError
 }
 impl Formattable::format
-impl Formattable::pretty_format
 impl Formattable for Int
 impl Formattable for Int64
 impl Formattable for UInt
