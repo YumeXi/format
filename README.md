@@ -8,7 +8,7 @@ The library provides formatting facilities for MoonBit.
 
 The `base` module implements basic formatting functions and types.
 
-We can use `try_format!` to format a string. If you don't want to get an error, you can use `format` instead.
+We can use `try_format!` to format a string. If you don't want to get an error, you can use `format` instead. By the way, `print` can be used to format arguments and print to the console.
 
 For example:
 
@@ -21,6 +21,8 @@ test {
 
 The formatting syntax is similar to Rust's `format!` macro and Cpp's `std::format` function. But we don't support named arguments due to its complexity and the lack of need (MoonBit already has a builtin string interpolation syntax).
 
+To use it for user-defined types, you should implement `Formattable` trait with `format` method. We plan to allow custom formatting field to strength the extensibility in the future.
+
 ### Terminal Styling
 
 The `style` module provides terminal styling functions and types.
@@ -32,7 +34,7 @@ For example:
 
 ```moonbit
 test {
-  println(format("{}", [fg(@style.Red) | emph(Bold) | "Bold red text"]))
+  @base.print("{}", [fg(@style.Red) | emph(Bold) | "Bold red text"])
 }
 ```
 
