@@ -1,0 +1,78 @@
+// References:
+// - https://homepages.inf.ed.ac.uk/wadler/papers/prettier/prettier.pdf
+// - https://lindig.github.io/papers/strictly-pretty-2000.pdf
+// - https://hexdocs.pm/elixir/Inspect.Algebra.html
+
+///|
+enum SimplifiedDoc {
+  Nil
+  Text(String, SimplifiedDoc)
+  Line(Int, SimplifiedDoc)
+} derive(Show)
+
+///|
+fn to_string(self : SimplifiedDoc) -> String {
+  match self {
+    Nil => ""
+    Text(s, doc) => s + doc.to_string()
+    Line(i, d) => "\n" + " ".repeat(i) + d.to_string()
+  }
+}
+
+///|
+impl @base.Formattable for Doc with format(self, field) {
+  simplify(field.or_default().width(), 0, [(0, Flat, Group(self))]).to_string()
+}
+
+///|
+impl Prettifiable for Doc with prettify(self) { self }
+
+///|
+pub fn op_add(self : Doc, other : Doc) -> Doc {
+  Concat(self, other)
+}
+
+///|
+fn fits(width : Int, list : Array[(Int, Mode, Doc)]) -> Bool {
+  if width < 0 {
+    return false
+  }
+  match list {
+    [] => true
+    [(i, m, Text("")), .. rest] => fits(width, [..rest])
+    [(i, m, Text(s)), .. rest] => fits(width - s.length(), [..rest])
+    [(i, m, Concat(x, y)), .. rest] =>
+      fits(width, [(i, m, x), (i, m, y), ..rest])
+    [(i, m, Nest(j, x)), .. rest] => fits(width, [(i + j, m, x), ..rest])
+    [(i, m, Group(x)), .. rest] => fits(width, [(i, Flat, x), ..rest])
+    [(i, Flat, Break(s)), .. rest] => fits(width - s.length(), [..rest])
+    [(i, Break, Break(_))] => true
+  }
+}
+
+///|
+fn simplify(
+  width : Int,
+  column : Int,
+  array : Array[(Int, Mode, Doc)]
+) -> SimplifiedDoc {
+  match array {
+    [] => Nil
+    [(i, m, Text("")), .. rest] => simplify(width, column, [..rest])
+    [(i, m, Text(s)), .. rest] =>
+      SimplifiedDoc::Text(s, simplify(width, column + s.length(), [..rest]))
+    [(i, m, Concat(x, y)), .. rest] =>
+      simplify(width, column, [(i, m, x), (i, m, y), ..rest])
+    [(i, m, Nest(j, x)), .. rest] =>
+      simplify(width, column, [(i + j, m, x), ..rest])
+    [(i, m, Group(x)), .. rest] =>
+      if fits(width - column, [(i, Flat, x), ..rest]) {
+        simplify(width, column, [(i, Flat, x), ..rest])
+      } else {
+        simplify(width, column, [(i, Break, x), ..rest])
+      }
+    [(i, Flat, Break(s)), .. rest] =>
+      Text(s, simplify(width, column + s.length(), [..rest]))
+    [(i, Break, Break(_)), .. rest] => Line(i, simplify(width, i, [..rest]))
+  }
+}

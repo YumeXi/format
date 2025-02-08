@@ -52,7 +52,7 @@ struct FormatField {
 } derive(Show, Eq)
 
 ///| @coverage.skip
-impl Default for FormatField with default() {
+pub impl Default for FormatField with default() {
   {
     arg_id: None,
     fill: ' ',
