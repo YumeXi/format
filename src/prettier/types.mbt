@@ -14,7 +14,7 @@ pub enum Mode {
 } derive(Show)
 
 ///|
-trait Prettifiable: @base.Formattable {
+pub(open) trait Prettifiable: @base.Formattable {
   prettify(Self) -> Doc
 }
 

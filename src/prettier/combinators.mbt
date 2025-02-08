@@ -35,3 +35,11 @@ pub fn break_with(s : String) -> Doc {
 pub fn group(doc : Doc) -> Doc {
   Group(doc)
 }
+
+///|
+pub fn intersperse(sep : Doc, docs : Array[Doc]) -> Doc {
+  match docs {
+    [] => empty()
+    [x, .. xs] => xs.iter().fold(init=x, fn(l, r) { Concat(l, Concat(sep, r)) })
+  }
+}

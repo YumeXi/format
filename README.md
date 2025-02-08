@@ -38,4 +38,15 @@ test {
 
 ### Pretty Printing
 
-*Under construction...*
+The `prettier` package provides pretty printing facilities.
+
+We can implement `prettify` method to format a value as a document, and using combinator to build up the document.
+
+For example:
+```moonbit
+test {
+  let doc = group(text("hello") + nest(break_with(" , ") + text("world")))
+  // Here we overload the `width` parameter to specify the pretty printing width.
+  assert_eq!(format("{:6}", doc), "hello\n  world")
+}
+```
