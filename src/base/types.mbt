@@ -7,7 +7,7 @@ pub(open) trait Formattable: Show {
 impl Formattable with format(self, _) { self.to_string() }
 
 ///|
-struct Formatter {
+pub struct Formatter {
   strings : Array[String]
   format_specs : Array[String]
   builder : StringBuilder

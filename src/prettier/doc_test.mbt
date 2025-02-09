@@ -22,17 +22,14 @@ enum Tree[A] {
 } derive(Show)
 
 ///|
-pub impl[A : Prettifiable] Prettifiable for Tree[A] with prettify(
-  tree : Tree[A]
-) {
+pub impl[A : Pretty] Pretty for Tree[A] with prettify(tree : Tree[A]) {
   match tree {
     Leaf(x) => x.prettify()
     Node(xs) =>
       group(
         text("Node(") +
         nest(
-          space() +
-          intersperse(text(",") + space(), xs.map(Prettifiable::prettify)),
+          space() + intersperse(text(",") + space(), xs.map(Pretty::prettify)),
         ) +
         space() +
         text(")"),
@@ -54,7 +51,7 @@ test {
     Leaf(1000),
   ])
   inspect!(
-    format("{:60}", [tree]),
+    prettify("{:60}", [tree]),
     content=
       #|Node(
       #|  100,
@@ -104,11 +101,11 @@ test "show tree" {
   ])
   let doc = show_tree(tree)
   inspect!(
-    format("{:80}", [doc]),
+    prettify("{:80}", [doc]),
     content="aaa[bbbb[cc, dd], eee, fff[gg, hh, ii]]",
   )
   inspect!(
-    format("{:10}", [doc]),
+    prettify("{:10}", [doc]),
     content=
       #|aaa[bbbb[cc,
       #|         dd],
@@ -119,7 +116,7 @@ test "show tree" {
     ,
   )
   inspect!(
-    format("{:20}", [doc]),
+    prettify("{:20}", [doc]),
     content=
       #|aaa[bbbb[cc, dd],
       #|    eee,

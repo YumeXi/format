@@ -9,7 +9,7 @@ fn write_string(self : Formatter, string : String) -> Unit {
 }
 
 ///|
-fn Formatter::init!(
+pub fn Formatter::init!(
   self : Formatter,
   format_string : String
 ) -> Unit!FormatError {
@@ -201,7 +201,7 @@ fn parse_field!(self : Formatter, field : String) -> FormatField!FormatError {
 }
 
 ///|
-fn Formatter::format!(
+pub fn Formatter::format!(
   self : Formatter,
   args : Array[&Formattable]
 ) -> String!FormatError {

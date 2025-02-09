@@ -12,6 +12,11 @@ pub fn text(s : String) -> Doc {
 }
 
 ///|
+pub fn content[T : Show](v : T) -> Doc {
+  text(v.to_string())
+}
+
+///|
 pub fn nest(indent~ : Int = 2, doc : Doc) -> Doc {
   Nest(indent, doc)
 }
@@ -42,4 +47,9 @@ pub fn intersperse(sep : Doc, docs : Array[Doc]) -> Doc {
     [] => empty()
     [x, .. xs] => xs.fold(init=x, fn(l, r) { l + sep + r })
   }
+}
+
+///|
+pub fn surround(open : &Pretty, doc : &Pretty, close : &Pretty) -> Doc {
+  group(open.prettify() + doc.prettify() + close.prettify())
 }

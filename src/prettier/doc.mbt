@@ -25,9 +25,6 @@ pub impl @base.Formattable for Doc with format(self, field) {
 }
 
 ///|
-pub impl Prettifiable for Doc with prettify(self) { self }
-
-///|
 pub fn op_add(self : Doc, other : Doc) -> Doc {
   Concat(self, other)
 }

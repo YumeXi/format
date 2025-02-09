@@ -5,9 +5,9 @@ alias @YumeXi/format/base as @base
 // Values
 fn break_with(String) -> Doc
 
-fn empty() -> Doc
+fn content[T : Show](T) -> Doc
 
-fn format(String, Array[&Prettifiable]) -> String
+fn empty() -> Doc
 
 fn group(Doc) -> Doc
 
@@ -19,9 +19,15 @@ fn line() -> Doc
 
 fn nest(indent~ : Int = .., Doc) -> Doc
 
+fn prettify(String, Array[&Pretty]) -> String
+
 fn space() -> Doc
 
+fn surround(&Pretty, &Pretty, &Pretty) -> Doc
+
 fn text(String) -> Doc
+
+fn try_prettify(String, Array[&Pretty]) -> String!@base.FormatError
 
 // Types and methods
 pub(all) enum Doc {
@@ -35,7 +41,7 @@ impl Doc {
   op_add(Self, Self) -> Self
 }
 impl @base.Formattable for Doc
-impl Prettifiable for Doc
+impl Pretty for Doc
 impl Show for Doc
 
 pub enum Mode {
@@ -47,14 +53,33 @@ impl Show for Mode
 type SimplifiedDoc
 impl Show for SimplifiedDoc
 
-impl @base.Formattable for &Prettifiable
+impl @base.Formattable for &PrettyFormattable
 
 // Type aliases
 
 // Traits
-pub(open) trait Prettifiable : @base.Formattable {
+pub(open) trait Pretty {
   prettify(Self) -> Doc
 }
-impl Prettifiable for Int
-impl Prettifiable for String
+impl Pretty for Unit
+impl Pretty for Bool
+impl Pretty for Char
+impl Pretty for Int
+impl Pretty for Int64
+impl Pretty for UInt
+impl Pretty for UInt64
+impl Pretty for Float
+impl Pretty for Double
+impl Pretty for String
+impl[T : Pretty] Pretty for T?
+impl[T : Pretty, E : Pretty + Error] Pretty for Result[T, E]
+impl[T : Pretty] Pretty for FixedArray[T]
+impl Pretty for &PrettyFormattable
+impl[T : Pretty] Pretty for Array[T]
+impl Pretty for Json
+impl[A : Pretty, B : Pretty] Pretty for Map[A, B]
+
+pub(open) trait PrettyFormattable : Pretty + @base.Formattable {
+  pretty_format(Self, @base.FormatField?) -> Doc!@base.FormatError
+}
 

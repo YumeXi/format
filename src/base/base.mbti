@@ -28,8 +28,14 @@ impl Default for FormatField
 impl Eq for FormatField
 impl Show for FormatField
 
-type Formatter
+pub struct Formatter {
+  strings : Array[String]
+  format_specs : Array[String]
+  builder : StringBuilder
+}
 impl Formatter {
+  format(Self, Array[&Formattable]) -> String!FormatError
+  init(Self, String) -> Unit!FormatError
   new() -> Self
 }
 impl Show for Formatter
