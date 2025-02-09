@@ -128,3 +128,9 @@ test {
     ,
   )
 }
+
+///|
+pub impl[T : Pretty] Pretty for @style.StyledArg[T] with prettify(self) {
+  let (start, end) = self._.0.render_style()
+  surround(start, self._.1.prettify(), end)
+}

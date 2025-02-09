@@ -3,7 +3,7 @@ pub struct Style {
   bg : BgColor?
   fg : FgColor?
   emphasis : Array[Emphasis]
-} derive(Show)
+} derive(Show, Default)
 
 ///|
 pub(open) trait Styled {

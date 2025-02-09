@@ -5,13 +5,13 @@ pub(all) enum Doc {
   Concat(Doc, Doc)
   Group(Doc)
   Nest(Int, Doc)
-} derive(Show)
+} derive(Show, Eq)
 
 ///|
 pub enum Mode {
   Flat
   Break
-} derive(Show)
+} derive(Show, Eq)
 
 ///|
 pub(open) trait Pretty {

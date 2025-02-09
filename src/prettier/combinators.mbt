@@ -22,6 +22,21 @@ pub fn nest(indent~ : Int = 2, doc : Doc) -> Doc {
 }
 
 ///|
+pub fn concat(array : Array[&Pretty]) -> Doc {
+  array[:-1].rev_fold(init=array.last().or(empty()).prettify(), fn(doc, elem) {
+    elem.prettify() + doc
+  })
+}
+
+test {
+  let array : Array[&Pretty] = [text("hello"), break_with(", "), text("world")]
+  assert_eq!(
+    concat(array),
+    Concat(Text("hello"), Concat(Break(", "), Text("world"))),
+  )
+}
+
+///|
 pub fn line() -> Doc {
   Break("\n")
 }
