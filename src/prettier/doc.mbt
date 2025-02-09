@@ -6,7 +6,7 @@
 ///|
 enum SimplifiedDoc {
   Nil
-  Text(String, SimplifiedDoc)
+  Text(@rope.Rope, SimplifiedDoc)
   Line(Int, SimplifiedDoc)
 } derive(Show)
 
@@ -14,7 +14,7 @@ enum SimplifiedDoc {
 fn to_string(self : SimplifiedDoc) -> String {
   match self {
     Nil => ""
-    Text(s, doc) => s + doc.to_string()
+    Text(s, doc) => s.to_string() + doc.to_string()
     Line(i, d) => "\n" + " ".repeat(i) + d.to_string()
   }
 }
@@ -36,7 +36,7 @@ fn fits(width : Int, list : Array[(Int, Mode, Doc)]) -> Bool {
   }
   match list {
     [] => true
-    [(_, _, Text("")), .. rest] => fits(width, [..rest])
+    [(_, _, Empty), .. rest] => fits(width, [..rest])
     [(_, _, Text(s)), .. rest] => fits(width - s.length(), [..rest])
     [(i, m, Concat(x, y)), .. rest] =>
       fits(width, [(i, m, x), (i, m, y), ..rest])
@@ -55,7 +55,7 @@ fn simplify(
 ) -> SimplifiedDoc {
   match array {
     [] => Nil
-    [(_, _, Text("")), .. rest] => simplify(width, column, [..rest])
+    [(_, _, Empty), .. rest] => simplify(width, column, [..rest])
     [(_, _, Text(s)), .. rest] =>
       SimplifiedDoc::Text(s, simplify(width, column + s.length(), [..rest]))
     [(i, m, Concat(x, y)), .. rest] =>
@@ -69,7 +69,7 @@ fn simplify(
         simplify(width, column, [(i, Break, x), ..rest])
       }
     [(_, Flat, Break(s)), .. rest] =>
-      Text(s, simplify(width, column + s.length(), [..rest]))
+      Text(@rope.from_string(s), simplify(width, column + s.length(), [..rest]))
     [(i, Break, Break(_)), .. rest] => Line(i, simplify(width, i, [..rest]))
   }
 }

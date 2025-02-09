@@ -1,11 +1,12 @@
 ///|
 pub(all) enum Doc {
+  Empty
   Break(String)
-  Text(String)
+  Text(@rope.Rope)
   Concat(Doc, Doc)
   Group(Doc)
   Nest(Int, Doc)
-} derive(Show, Eq)
+} derive(Show, Eq, Default)
 
 ///|
 pub enum Mode {
