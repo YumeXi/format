@@ -116,7 +116,7 @@ test {
     "isMarried": true,
     "hobbies": ["reading", "swimming"],
   }
-  prettify("{:50}", [json])
+  json.prettify().print(width=60)
   |> inspect!(
     content=
       #|{

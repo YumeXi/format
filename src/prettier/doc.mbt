@@ -73,3 +73,8 @@ fn simplify(
     [(i, Break, Break(_)), .. rest] => Line(i, simplify(width, i, [..rest]))
   }
 }
+
+///|
+pub fn Doc::print(self : Doc, width~ : Int = 50) -> String {
+  simplify(width, 0, [(0, Flat, Group(self))]).to_string()
+}
