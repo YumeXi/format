@@ -67,8 +67,10 @@ pub struct Style {
 }
 impl Style {
   lor[T : Styled](Self, T) -> StyledArg[T]
+  render_style(Self) -> (String, String)
 }
 impl Styled for Style
+impl Default for Style
 impl Show for Style
 
 pub type StyledArg (Style, T)

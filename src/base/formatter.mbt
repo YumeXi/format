@@ -77,6 +77,7 @@ fn parse_field!(self : Formatter, field : String) -> FormatField!FormatError {
   fn parse_spec!(spec : String) -> FormatField!FormatError {
     let mut iter = spec.iter()
     let mut field = FormatField::default()
+    // Parse fill and alignment
     l0~: for c in iter {
       let ch = c
       l1~: loop ch {
@@ -91,6 +92,7 @@ fn parse_field!(self : Formatter, field : String) -> FormatField!FormatError {
         _ =>
           match iter.take(2).drop(1).peek() {
             Some('>' | '<' | '^' as align) => {
+              println('1')
               field = { ..field, fill: ch }
               iter = iter.drop(1)
               continue l1~ align

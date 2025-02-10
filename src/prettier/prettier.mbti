@@ -1,9 +1,12 @@
 package YumeXi/format/prettier
 
 alias @YumeXi/format/base as @base
+alias @YumeXi/format/style as @style
 
 // Values
 fn break_with(String) -> Doc
+
+fn concat(Array[&Pretty]) -> Doc
 
 fn content[T : Show](T) -> Doc
 
@@ -39,15 +42,18 @@ pub(all) enum Doc {
 }
 impl Doc {
   op_add(Self, Self) -> Self
+  print(Self, width~ : Int = ..) -> String
 }
 impl @base.Formattable for Doc
 impl Pretty for Doc
+impl Eq for Doc
 impl Show for Doc
 
 pub enum Mode {
   Flat
   Break
 }
+impl Eq for Mode
 impl Show for Mode
 
 type SimplifiedDoc
@@ -75,6 +81,7 @@ impl[T : Pretty] Pretty for T?
 impl[T : Pretty, E : Pretty + Error] Pretty for Result[T, E]
 impl[T : Pretty] Pretty for FixedArray[T]
 impl Pretty for &PrettyFormattable
+impl[T : Pretty] Pretty for @style.StyledArg[T]
 impl[T : Pretty] Pretty for Array[T]
 impl Pretty for Json
 impl[A : Pretty, B : Pretty] Pretty for Map[A, B]

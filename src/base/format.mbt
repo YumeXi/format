@@ -22,7 +22,7 @@
 /// ```moonbit
 /// test "try_format" {
 ///   let args : Array[&Formattable] = [(42 : Int), ("world" : String)]
-///   inspect!(try_format!("Hello {1}, {:03d}!", args), content="Hello world, 042!")
+///   inspect!(try_format!("Hello {1}, {0:0>3d}!", args), content="Hello world, 042!")
 /// }
 /// ```
 pub fn try_format!(
