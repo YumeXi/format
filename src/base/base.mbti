@@ -1,9 +1,13 @@
 package YumeXi/format/base
 
 // Values
+fn debug[T : Show](T, with_loc~ : Bool = .., loc~ : SourceLoc = _) -> Unit
+
 fn format(String, Array[&Formattable]) -> String
 
 fn print(String, Array[&Formattable]) -> Unit
+
+fn set_debug(enabled~ : Bool) -> Unit
 
 fn try_format(String, Array[&Formattable]) -> String!FormatError
 

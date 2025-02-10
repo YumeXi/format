@@ -92,7 +92,6 @@ fn parse_field!(self : Formatter, field : String) -> FormatField!FormatError {
         _ =>
           match iter.take(2).drop(1).peek() {
             Some('>' | '<' | '^' as align) => {
-              println('1')
               field = { ..field, fill: ch }
               iter = iter.drop(1)
               continue l1~ align
