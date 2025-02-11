@@ -3,12 +3,12 @@ pub let hardline : Doc = Break("\n")
 
 ///|
 pub fn empty() -> Doc {
-  Text("")
+  Empty
 }
 
 ///|
 pub fn text(s : String) -> Doc {
-  Text(s)
+  Text(@rope.from_string(s))
 }
 
 ///|
@@ -32,7 +32,7 @@ test {
   let array : Array[&Pretty] = [text("hello"), break_with(", "), text("world")]
   assert_eq!(
     concat(array),
-    Concat(Text("hello"), Concat(Break(", "), Text("world"))),
+    Concat(text("hello"), Concat(Break(", "), text("world"))),
   )
 }
 
