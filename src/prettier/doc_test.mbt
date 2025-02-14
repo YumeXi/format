@@ -1,3 +1,4 @@
+///|
 test {
   let doc = group(text("hello") + nest(break_with(" , ") + text("world")))
   inspect!(
@@ -16,28 +17,45 @@ test {
 }
 
 ///| Reference: https://github.com/Yoorkin/prettyprinter/blob/main/example/tree.mbt
-enum Tree[A] {
-  Leaf(A)
-  Node(Array[Tree[A]])
+enum Tree {
+  Leaf(Int)
+  Node(Array[Tree])
 } derive(Show)
 
 ///|
-pub impl[A : Pretty] Pretty for Tree[A] with prettify(tree : Tree[A]) {
-  match tree {
-    Leaf(x) => x.prettify()
-    Node(xs) =>
-      group(
-        text("Node(") +
-        nest(
-          space() + intersperse(text(",") + space(), xs.map(Pretty::prettify)),
-        ) +
-        space() +
-        text(")"),
-      )
+test "show tree 1" {
+  ///|
+  fn show_tree(tree : Tree) {
+    match tree {
+      Leaf(x) => content(x)
+      Node(xs) =>
+        surround(
+          "Node(",
+          nest(space() + intersperse(text(",") + space(), xs.map(show_tree))) +
+          space(),
+          ")",
+        )
+    }
   }
-}
+  ///| Only an example for colorful pretty printing
+  fn _show_tree_with_color(tree : Tree) {
+    match tree {
+      Leaf(x) => content(x)
+      Node(xs) =>
+        enclose(
+          "Node(",
+          nest(
+            space() +
+            colorize(
+              intersperse(text(",") + space(), xs.map(_show_tree_with_color)),
+            ),
+          ) +
+          space(),
+          ")",
+        )
+    }
+  }
 
-test {
   let tree = Node([
     Leaf(100),
     Leaf(200),
@@ -45,13 +63,13 @@ test {
     Node([
       Leaf(400),
       Leaf(500),
-      Node([Leaf(6000000), Leaf(7000000), Leaf(80000000), Leaf(80000001)]),
+      Node([Leaf(6000000), Leaf(7000000), Leaf(80000000), Leaf(80000000)]),
       Leaf(900),
     ]),
     Leaf(1000),
   ])
   inspect!(
-    prettify("{:60}", [tree]),
+    show_tree(tree).print(width=60),
     content=
       #|Node(
       #|  100,
@@ -60,7 +78,7 @@ test {
       #|  Node(
       #|    400,
       #|    500,
-      #|    Node( 6000000, 7000000, 80000000, 80000001 ),
+      #|    Node( 6000000, 7000000, 80000000, 80000000 ),
       #|    900
       #|  ),
       #|  1000
@@ -69,8 +87,8 @@ test {
   )
 }
 
-/// Reference: https://homepages.inf.ed.ac.uk/wadler/papers/prettier/prettier.pdf
-test "show tree" {
+///| Reference: https://homepages.inf.ed.ac.uk/wadler/papers/prettier/prettier.pdf
+test "show tree 2" {
   enum Tree {
     Node(String, Array[Tree])
   }

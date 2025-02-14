@@ -1,6 +1,12 @@
+///|
 let debug_enabled : Ref[Bool] = @ref.new(false)
 
-pub fn debug[T : Show](v : T, with_loc~: Bool = true, loc~: SourceLoc = _) -> Unit {
+///|
+pub fn debug[T : Show](
+  v : T,
+  with_loc~ : Bool = true,
+  loc~ : SourceLoc = _
+) -> Unit {
   if debug_enabled.val {
     if with_loc {
       println("[\{v} at \{loc}]")
@@ -9,6 +15,8 @@ pub fn debug[T : Show](v : T, with_loc~: Bool = true, loc~: SourceLoc = _) -> Un
     }
   }
 }
-pub fn set_debug(enabled~: Bool) -> Unit {
+
+///|
+pub fn set_debug(enabled~ : Bool) -> Unit {
   debug_enabled.val = enabled
 }

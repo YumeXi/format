@@ -1,3 +1,4 @@
+///|
 test {
   inspect!(
     @base.try_format!("{}", [fg(@style.Red) | emph(Bold) | "Test"]),
@@ -9,6 +10,7 @@ test {
   )
 }
 
+///|
 test {
   inspect!(
     @base.try_format!("{}", [

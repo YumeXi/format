@@ -1,3 +1,4 @@
+///|
 test "parse '{' '}'" {
   let formatter = Formatter::new()
   assert_true!(formatter.init?("{}").is_ok())
@@ -16,6 +17,7 @@ test "parse '{' '}'" {
   formatter.reset()
 }
 
+///|
 test "parse [[fill]align][width]" {
   let formatter = Formatter::new()
   assert_eq!(formatter.parse_field!(":->"), {
@@ -31,6 +33,7 @@ test "parse [[fill]align][width]" {
   })
 }
 
+///|
 test "parse [sign]" {
   let formatter = Formatter::new()
   assert_eq!(formatter.parse_field!(":+"), {
@@ -44,6 +47,7 @@ test "parse [sign]" {
   })
 }
 
+///|
 test "parse [\".\" precision]" {
   let formatter = Formatter::new()
   assert_eq!(formatter.parse_field!(":.2"), {

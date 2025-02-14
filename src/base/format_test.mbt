@@ -1,3 +1,4 @@
+///|
 test "format" {
   inspect!(@base.format("Hello {}!", ["World"]), content="Hello World!")
   inspect!(@base.format("Hello {0:>5}!", ["Test"]), content="Hello  Test!")
@@ -12,6 +13,7 @@ test "format" {
   inspect!(@base.format("{0:-} {1:-}", [12, -12]), content="12 -12")
 }
 
+///|
 test "example 1" {
   inspect!(
     @base.format("Left aligned: '{:10}', Right aligned: '{:>10}'", [

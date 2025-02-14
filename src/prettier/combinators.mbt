@@ -28,6 +28,7 @@ pub fn concat(array : Array[&Pretty]) -> Doc {
   })
 }
 
+///|
 test {
   let array : Array[&Pretty] = [text("hello"), break_with(", "), text("world")]
   assert_eq!(
@@ -67,4 +68,53 @@ pub fn intersperse(sep : Doc, docs : Array[Doc]) -> Doc {
 ///|
 pub fn surround(open : &Pretty, doc : &Pretty, close : &Pretty) -> Doc {
   group(open.prettify() + doc.prettify() + close.prettify())
+}
+
+///|
+let seed : Ref[UInt64] = @ref.new(0)
+
+///|
+pub fn enclose(
+  open : &Pretty,
+  doc : &Pretty,
+  close : &Pretty,
+  foreground? : &@style.ToColor,
+  colorized_doc~ : Bool = false
+) -> Doc {
+  let foreground = match foreground {
+    Some(c) => @style.ToColor::to_color(c)
+    None => {
+      seed.val += 8
+      @style.Color16(
+        @style.Color16::arbitrary(
+          12,
+          @quickcheck/splitmix.new(seed=@env.now() + seed.val * 128),
+        ),
+      )
+    }
+  }
+  let style = @style.fg(foreground)
+  if colorized_doc {
+    (style | surround(open, doc, close)).prettify()
+  } else {
+    surround(style | open, doc, style | close).prettify()
+  }
+}
+
+///|
+pub fn colorize(doc : &Pretty, foreground? : &@style.ToColor) -> Doc {
+  let foreground = match foreground {
+    Some(c) => @style.ToColor::to_color(c)
+    None => {
+      seed.val += 8
+      @style.Color16(
+        @style.Color16::arbitrary(
+          12,
+          @quickcheck/splitmix.new(seed=@env.now() + seed.val * 128),
+        ),
+      )
+    }
+  }
+  let style = @style.fg(foreground)
+  (style | doc).prettify()
 }

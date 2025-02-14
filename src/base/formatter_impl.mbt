@@ -114,6 +114,7 @@ fn int64_to_string(n : Int64, type_flag : Char) -> String {
   }
 }
 
+///|
 test {
   inspect!(int64_to_string(12, 'b'), content="1100")
   inspect!(int64_to_string(-12, 'o'), content="14")

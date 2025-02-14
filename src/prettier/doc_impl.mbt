@@ -1,35 +1,62 @@
 ///|
-pub impl Pretty for Doc with prettify(self) { self }
+pub impl Pretty for Doc with prettify(self) {
+  self
+}
 
 ///|
-pub impl Pretty for String with prettify(self) { text(self) }
+pub impl Pretty for String with prettify(self) {
+  text(self)
+}
 
 ///|
-pub impl Pretty for Int with prettify(self) { content(self) }
+pub impl Pretty for @rope.Rope with prettify(self) {
+  Text(self)
+}
 
 ///|
-pub impl Pretty for Bool with prettify(self) { content(self) }
+pub impl Pretty for Int with prettify(self) {
+  content(self)
+}
 
 ///|
-pub impl Pretty for Float with prettify(self) { content(self) }
+pub impl Pretty for Bool with prettify(self) {
+  content(self)
+}
 
 ///|
-pub impl Pretty for Double with prettify(self) { content(self) }
+pub impl Pretty for Float with prettify(self) {
+  content(self)
+}
 
 ///|
-pub impl Pretty for Char with prettify(self) { content(self) }
+pub impl Pretty for Double with prettify(self) {
+  content(self)
+}
 
 ///|
-pub impl Pretty for Unit with prettify(_) { text("()") }
+pub impl Pretty for Char with prettify(self) {
+  content(self)
+}
 
 ///|
-pub impl Pretty for Int64 with prettify(self) { content(self) }
+pub impl Pretty for Unit with prettify(_) {
+  text("()")
+}
 
 ///|
-pub impl Pretty for UInt64 with prettify(self) { content(self) }
+pub impl Pretty for Int64 with prettify(self) {
+  content(self)
+}
 
 ///|
-pub impl Pretty for UInt with prettify(self) { content(self) }
+pub impl Pretty for UInt64 with prettify(self) {
+  content(self)
+}
+
+///|
+pub impl Pretty for UInt with prettify(self) {
+  content(self)
+}
 
 ///|
 pub impl[T : Pretty] Pretty for T? with prettify(self) {
@@ -109,6 +136,7 @@ pub impl Pretty for Json with prettify(self) {
   }
 }
 
+///|
 test {
   let json : Json = {
     "name": "John Doe",
@@ -132,5 +160,20 @@ test {
 ///|
 pub impl[T : Pretty] Pretty for @style.StyledArg[T] with prettify(self) {
   let (start, end) = self._.0.render_style()
-  surround(start, self._.1.prettify(), end)
+  surround(
+    @rope.hidden_string(start),
+    self._.1.prettify(),
+    @rope.hidden_string(end),
+  )
+}
+
+///|
+test {
+  inspect!(
+    (@style.fg(@style.Red) |
+    group(text("hello") + nest(break_with(", ") + text("world"))))
+    .prettify()
+    .print(width=12),
+    content="\x1b[31mhello, world\x1b[39m",
+  )
 }

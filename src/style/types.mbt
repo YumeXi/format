@@ -14,13 +14,19 @@ pub(open) trait Styled {
 pub type StyledArg[T] (Style, T) derive(Show)
 
 ///|
-pub impl Styled for Style with style(self) { self }
+pub impl Styled for Style with style(self) {
+  self
+}
 
 ///|
-impl Styled with style(_) { { bg: None, fg: None, emphasis: [] } }
+impl Styled with style(_) {
+  { bg: None, fg: None, emphasis: [] }
+}
 
 ///|
-pub impl[T] Styled for StyledArg[T] with style(self) { self.0 }
+pub impl[T] Styled for StyledArg[T] with style(self) {
+  self.0
+}
 
 ///|
 pub(all) enum Color16 {
@@ -40,7 +46,7 @@ pub(all) enum Color16 {
   BrightMagenta
   BrightCyan
   BrightWhite
-} derive(Show, Eq)
+} derive(Show, Eq, Arbitrary)
 
 ///|
 pub(all) enum Color {
@@ -83,6 +89,6 @@ pub fn emph(emphasis : Emphasis) -> Style {
 }
 
 ///|
-trait ToColor {
+pub trait ToColor {
   to_color(Self) -> Color
 }

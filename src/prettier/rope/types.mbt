@@ -23,7 +23,9 @@ pub(all) enum Rope {
 } derive(Eq)
 
 ///|
-pub impl Default for Rope with default() { Leaf(Leaf::default(), len=0) }
+pub impl Default for Rope with default() {
+  Leaf(Leaf::default(), len=0)
+}
 
 ///|
 pub impl Show for Rope with output(self, logger) {
@@ -66,4 +68,10 @@ pub fn length(self : Rope) -> Int {
     Leaf(_, len~) => len
     Node(_, len~) => len
   }
+}
+
+///|
+pub fn hidden_string(s : String) -> Rope {
+  // Uses fake length to avoid counting the hidden characters when pretty printing
+  Leaf({ buf: s, start: 0, end: s.length() }, len=0)
 }

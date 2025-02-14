@@ -1,6 +1,6 @@
 package YumeXi/format/style
 
-alias @YumeXi/format/base as @base
+alias @moonbitlang/core/quickcheck/splitmix as @splitmix
 
 // Values
 fn bg[T : ToColor](T) -> Style
@@ -43,6 +43,7 @@ pub(all) enum Color16 {
 impl ToColor for Color16
 impl Eq for Color16
 impl Show for Color16
+impl @moonbitlang/core/quickcheck.Arbitrary for Color16
 
 pub(all) enum Emphasis {
   Bold
@@ -73,9 +74,9 @@ impl Styled for Style
 impl Default for Style
 impl Show for Style
 
-pub type StyledArg (Style, T)
+pub type StyledArg[T] (Style, T)
 impl StyledArg {
-  lor[T : @base.Formattable + Styled](Self[Style], T) -> Self[T]
+  lor[T : Styled](Self[Style], T) -> Self[T]
 }
 impl[T] Styled for StyledArg[T]
 impl[T : Show] Show for StyledArg[T]
@@ -88,7 +89,9 @@ pub(open) trait Styled {
 }
 impl Styled::style
 
-trait ToColor
+pub trait ToColor {
+  to_color(Self) -> Color
+}
 impl ToColor for Int
 impl ToColor for (Int, Int, Int)
 

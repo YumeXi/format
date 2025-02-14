@@ -1,16 +1,21 @@
 package YumeXi/format/prettier
 
 alias @YumeXi/format/base as @base
+alias @YumeXi/format/prettier/rope as @rope
 alias @YumeXi/format/style as @style
 
 // Values
 fn break_with(String) -> Doc
+
+fn colorize(&Pretty, foreground? : &@style.ToColor) -> Doc
 
 fn concat(Array[&Pretty]) -> Doc
 
 fn content[T : Show](T) -> Doc
 
 fn empty() -> Doc
+
+fn enclose(&Pretty, &Pretty, &Pretty, foreground? : &@style.ToColor, colorized_doc~ : Bool = ..) -> Doc
 
 fn group(Doc) -> Doc
 
@@ -34,8 +39,9 @@ fn try_prettify(String, Array[&Pretty]) -> String!@base.FormatError
 
 // Types and methods
 pub(all) enum Doc {
+  Empty
   Break(String)
-  Text(String)
+  Text(@rope.Rope)
   Concat(Doc, Doc)
   Group(Doc)
   Nest(Int, Doc)
@@ -46,6 +52,7 @@ impl Doc {
 }
 impl @base.Formattable for Doc
 impl Pretty for Doc
+impl Default for Doc
 impl Eq for Doc
 impl Show for Doc
 
@@ -81,6 +88,7 @@ impl[T : Pretty] Pretty for T?
 impl[T : Pretty, E : Pretty + Error] Pretty for Result[T, E]
 impl[T : Pretty] Pretty for FixedArray[T]
 impl Pretty for &PrettyFormattable
+impl Pretty for @rope.Rope
 impl[T : Pretty] Pretty for @style.StyledArg[T]
 impl[T : Pretty] Pretty for Array[T]
 impl Pretty for Json

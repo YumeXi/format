@@ -16,13 +16,11 @@ pub fn Style::lor[T : Styled](self : Style, other : T) -> StyledArg[T] {
 }
 
 ///|
-pub fn lor[T : @base.Formattable + Styled](
-  self : StyledArg[Style],
-  other : T
-) -> StyledArg[T] {
+pub fn lor[T : Styled](self : StyledArg[Style], other : T) -> StyledArg[T] {
   ((self.style() | other.style()).style(), other)
 }
 
+///|
 test {
   let _ = fg(Red) | bg(Blue) | 1.23
   let _ = fg(Red) | emph(Bold) | "test"
@@ -30,19 +28,26 @@ test {
 }
 
 ///|
-pub impl ToColor for Color with to_color(self) { self }
+pub impl ToColor for Color with to_color(self) {
+  self
+}
 
 ///|
-pub impl ToColor for Color16 with to_color(self) { Color16(self) }
+pub impl ToColor for Color16 with to_color(self) {
+  Color16(self)
+}
 
 ///|
-pub impl ToColor for Int with to_color(self) { Color256(self) }
+pub impl ToColor for Int with to_color(self) {
+  Color256(self)
+}
 
 ///|
 pub impl ToColor for (Int, Int, Int) with to_color(self) {
   TrueColor(self.0, self.1, self.2)
 }
 
+///|
 test {
   let _ = fg(Red) | bg((255, 255, 255)) | 1.23
 

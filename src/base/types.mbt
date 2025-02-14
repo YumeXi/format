@@ -4,7 +4,9 @@ pub(open) trait Formattable: Show {
 }
 
 ///| @coverage.skip
-impl Formattable with format(self, _) { self.to_string() }
+impl Formattable with format(self, _) {
+  self.to_string()
+}
 
 ///|
 pub struct Formatter {
@@ -28,7 +30,9 @@ enum Align {
 } derive(Show, Eq)
 
 ///| @coverage.skip
-impl Default for Align with default() { Left }
+impl Default for Align with default() {
+  Left
+}
 
 ///| @coverage.skip
 impl @strconv.FromStr for Align with from_string(str) {

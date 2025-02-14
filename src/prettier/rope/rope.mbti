@@ -1,0 +1,41 @@
+package YumeXi/format/prettier/rope
+
+// Values
+fn from_string(String) -> Rope
+
+fn hidden_string(String) -> Rope
+
+// Types and methods
+pub struct Leaf {
+  buf : String
+  start : Int
+  end : Int
+}
+impl Default for Leaf
+impl Eq for Leaf
+impl Show for Leaf
+
+pub struct Node {
+  left : Rope?
+  right : Rope?
+}
+impl Default for Node
+impl Eq for Node
+impl Show for Node
+
+pub(all) enum Rope {
+  Leaf(Leaf, Int)
+  Node(Node, Int)
+}
+impl Rope {
+  length(Self) -> Int
+  op_add(Self, Self) -> Self
+}
+impl Default for Rope
+impl Eq for Rope
+impl Show for Rope
+
+// Type aliases
+
+// Traits
+
