@@ -41,8 +41,20 @@ pub impl Show for Rope with output(self, logger) {
 ///|
 pub fn op_add(self : Rope, other : Rope) -> Rope {
   match (self, other) {
-    (Leaf(_, len=0) | Node(_, len=0), _) => other
-    (_, Leaf(_, len=0) | Node(_, len=0)) => self
+    (Node(_, len=0), _) => other
+    (_, Node(_, len=0)) => self
+    (Leaf(leaf, len=0), _) =>
+      if leaf.end - leaf.start == 0 {
+        other
+      } else {
+        from_string(leaf.buf + other.to_string())
+      }
+    (_, Leaf(leaf, len=0)) =>
+      if leaf.end - leaf.start == 0 {
+        other
+      } else {
+        from_string(leaf.buf + other.to_string())
+      }
     (
       Leaf(_, len=len1)
       | Node(_, len=len1),
