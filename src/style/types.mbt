@@ -1,5 +1,5 @@
 ///|
-pub struct Style {
+pub(all) struct Style {
   bg : BgColor?
   fg : FgColor?
   emphasis : Array[Emphasis]
@@ -7,7 +7,7 @@ pub struct Style {
 
 ///|
 pub(open) trait Styled {
-  style(Self) -> Style
+  style(Self) -> Style = _
 }
 
 ///|
@@ -74,12 +74,12 @@ pub(all) enum Emphasis {
 } derive(Show, Eq)
 
 ///|
-pub fn fg[T : ToColor](color : T) -> Style {
+pub fn[T : ToColor] fg(color : T) -> Style {
   { bg: None, fg: Some(color.to_color()), emphasis: [] }
 }
 
 ///|
-pub fn bg[T : ToColor](color : T) -> Style {
+pub fn[T : ToColor] bg(color : T) -> Style {
   { bg: Some(color.to_color()), fg: None, emphasis: [] }
 }
 

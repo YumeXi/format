@@ -32,8 +32,8 @@ pub impl Show for Rope with output(self, logger) {
   match self {
     Leaf(leaf, ..) => Logger::write_string(logger, leaf.buf)
     Node(node, ..) => {
-      logger.write_object(node.left.or_default())
-      logger.write_object(node.right.or_default())
+      logger.write_object(node.left.unwrap_or_default())
+      logger.write_object(node.right.unwrap_or_default())
     }
   }
 }

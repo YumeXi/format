@@ -68,20 +68,20 @@ pub impl[T : Pretty] Pretty for T? with prettify(self) {
 
 ///|
 pub impl[T : Pretty] Pretty for Array[T] with prettify(self) {
-  surround("[", intersperse(text(","), self.map(fn { x => x.prettify() })), "]")
+  surround("[", intersperse(text(","), self.map(x => x.prettify())), "]")
 }
 
 ///|
 pub impl[T : Pretty] Pretty for FixedArray[T] with prettify(self) {
   surround(
     "[",
-    intersperse(text(","), self.iter().map(fn { x => x.prettify() }).collect()),
+    intersperse(text(","), self.iter().map(x => x.prettify()).collect()),
     "]",
   )
 }
 
 ///|
-pub impl[T : Pretty, E : Pretty + Error] Pretty for Result[T, E] with prettify(
+pub impl[T : Pretty, E : Pretty] Pretty for Result[T, E] with prettify(
   self
 ) {
   match self {
@@ -94,8 +94,9 @@ pub impl[T : Pretty, E : Pretty + Error] Pretty for Result[T, E] with prettify(
 pub impl[A : Pretty, B : Pretty] Pretty for Map[A, B] with prettify(self) {
   let entries = self
     .iter()
-    .map(fn {
-      (k, v) => group(k.prettify() + text(":") + space() + v.prettify())
+    .map(fn(ab) {
+      let (k, v) = ab
+      group(k.prettify() + text(":") + space() + v.prettify())
     })
   surround(
     "{",
@@ -111,21 +112,23 @@ pub impl Pretty for Json with prettify(self) {
     Null => text("null")
     True => text("true")
     False => text("false")
-    Number(n) => n.prettify()
-    String(s) => surround("\"", s.prettify(), "\"")
-    Array(arr) => arr.prettify()
+    Number(n) => Pretty::prettify(n)
+    String(s) => surround("\"", Pretty::prettify(s), "\"")
+    Array(arr) => Pretty::prettify(arr)
     Object(obj) => {
       let entries = obj
         .iter()
-        .map(fn {
-          (k, v) =>
+        .map(
+          pair => {
+            let (k, v) = pair
             group(
-              surround("\"", k.prettify(), "\"") +
+              surround("\"", Pretty::prettify(k), "\"") +
               text(":") +
               space() +
-              v.prettify(),
+              Pretty::prettify(v),
             )
-        })
+          }
+        )
       surround(
         "{",
         nest(space() + intersperse(text(",") + space(), entries.collect())) +
@@ -144,36 +147,42 @@ test {
     "isMarried": true,
     "hobbies": ["reading", "swimming"],
   }
-  json.prettify().print(width=60)
-  |> inspect!(
-    content=
+  Pretty::prettify(json).print(width=60)
+  |> inspect(
+    content=(
       #|{
       #|  "name": "John Doe",
       #|  "age": 30,
       #|  "isMarried": true,
       #|  "hobbies": ["reading","swimming"]
       #|}
-    ,
+    ),
   )
 }
 
 ///|
 pub impl[T : Pretty] Pretty for @style.StyledArg[T] with prettify(self) {
-  let (start, end) = self._.0.render_style()
+  let (start, end) = self.inner().0.render_style()
   surround(
     @rope.hidden_string(start),
-    self._.1.prettify(),
+    self.inner().1.prettify(),
     @rope.hidden_string(end),
   )
 }
 
 ///|
+impl @style.Styled for Doc with style(_self) {
+  { bg: None, fg: None, emphasis: [] }
+}
+
+///|
 test {
-  inspect!(
-    (@style.fg(@style.Red) |
-    group(text("hello") + nest(break_with(", ") + text("world"))))
-    .prettify()
-    .print(width=12),
+  inspect(
+    Pretty::prettify(
+      @style.fg(@style.Red).compose(
+        group(text("hello") + nest(break_with(", ") + text("world"))),
+      ),
+    ).print(width=12),
     content="\x1b[31mhello, world\x1b[39m",
   )
 }

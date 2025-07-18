@@ -21,11 +21,11 @@ fn to_string(self : SimplifiedDoc) -> String {
 
 ///|
 pub impl @base.Formattable for Doc with format(self, field) {
-  simplify(field.or_default().width(), 0, [(0, Flat, Group(self))]).to_string()
+  simplify(field.unwrap_or_default().width(), 0, [(0, Flat, Group(self))]).to_string()
 }
 
 ///|
-pub fn op_add(self : Doc, other : Doc) -> Doc {
+pub impl Add for Doc with op_add(self, other) {
   Concat(self, other)
 }
 

@@ -2,7 +2,7 @@
 let debug_enabled : Ref[Bool] = @ref.new(false)
 
 ///|
-pub fn debug[T : Show](
+pub fn[T : Show] debug(
   v : T,
   with_loc~ : Bool = true,
   loc~ : SourceLoc = _
