@@ -69,5 +69,5 @@ impl[T : @base.Formattable] @base.Formattable for StyledArg[T] with format(
   field
 ) {
   let (start, end) = self.0.render_style()
-  start + self.1.format!(field) + end
+  start + self.1.format(field) + end
 }

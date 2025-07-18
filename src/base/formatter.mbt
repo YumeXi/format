@@ -9,10 +9,10 @@ fn write_string(self : Formatter, string : String) -> Unit {
 }
 
 ///|
-pub fn Formatter::init!(
+pub fn Formatter::init(
   self : Formatter,
   format_string : String
-) -> Unit!FormatError {
+) -> Unit raise FormatError {
   // TODO: Rewrite in a more functional style
   let temp_builder = StringBuilder::new()
   let mut iterating_spec = false
@@ -69,12 +69,15 @@ fn reset(self : Formatter) -> Unit {
 ///  - `precision` : Precision of decimal
 ///  - `type` : Type specifier (e.g., 'x' for hexadecimal, 'e' for
 /// scientific notation)
-fn parse_field!(self : Formatter, field : String) -> FormatField!FormatError {
+fn parse_field(
+  self : Formatter,
+  field : String
+) -> FormatField raise FormatError {
   self |> ignore
   if field.is_blank() {
     raise InvalidFormatField(field)
   }
-  fn parse_spec!(spec : String) -> FormatField!FormatError {
+  fn parse_spec(spec : String) -> FormatField raise FormatError {
     let mut iter = spec.iter()
     let mut field = FormatField::default()
     // Parse fill and alignment
@@ -83,13 +86,13 @@ fn parse_field!(self : Formatter, field : String) -> FormatField!FormatError {
       l1~: loop ch {
         '>' | '<' | '^' as ch => {
           iter = iter.drop(1)
-          guard let Ok(align) = @strconv.parse?(ch.to_string()) else {
-            _ => raise InvalidFormatField(spec)
+          guard (try? @strconv.parse(ch.to_string())) is Ok(align) else {
+            raise InvalidFormatField(spec)
           }
           field = { ..field, align: Some(align) }
           break l0~
         }
-        _ =>
+        _ as ch =>
           match iter.take(2).drop(1).peek() {
             Some('>' | '<' | '^' as align) => {
               field = { ..field, fill: ch }
@@ -117,20 +120,21 @@ fn parse_field!(self : Formatter, field : String) -> FormatField!FormatError {
     match iter.peek() {
       Some('0'..='9') => {
         let mut len = 0
-        guard let Ok(width) = @strconv.parse?(
-          String::from_iter(
-            [
-              ..iter.take_while(fn(c) {
-                len += 1
-                match c {
-                  '0'..='9' => true
-                  _ => false
-                }
-              }),
-            ],
-          ),
-        ) else {
-          _ => raise InvalidFormatField(spec)
+        guard (try? @strconv.parse(
+            String::from_iter(
+              [
+                ..iter.take_while(fn(c) {
+                  len += 1
+                  match c {
+                    '0'..='9' => true
+                    _ => false
+                  }
+                }),
+              ],
+            ),
+          ))
+          is Ok(width) else {
+          raise InvalidFormatField(spec)
         }
         field = { ..field, width, }
         iter = iter.drop(len)
@@ -141,22 +145,23 @@ fn parse_field!(self : Formatter, field : String) -> FormatField!FormatError {
     match iter.peek() {
       Some('.') => {
         let mut len = 0
-        guard let Ok(precision) = @strconv.parse?(
-          String::from_iter(
-            [
-              ..iter
-              .drop(1)
-              .take_while(fn(c) {
-                len += 1
-                match c {
-                  '0'..='9' => true
-                  _ => false
-                }
-              }),
-            ],
-          ),
-        ) else {
-          _ => raise InvalidFormatField(spec)
+        guard (try? @strconv.parse(
+            String::from_iter(
+              [
+                ..iter
+                .drop(1)
+                .take_while(fn(c) {
+                  len += 1
+                  match c {
+                    '0'..='9' => true
+                    _ => false
+                  }
+                }),
+              ],
+            ),
+          ))
+          is Ok(precision) else {
+          raise InvalidFormatField(spec)
         }
         field = { ..field, precision: Some(precision) }
         iter = iter.drop(len)
@@ -175,53 +180,53 @@ fn parse_field!(self : Formatter, field : String) -> FormatField!FormatError {
     field
   }
 
-  match field.index_of(":") {
-    -1 =>
+  match field.find(":") {
+    None =>
       if field.is_empty() {
         FormatField::default()
       } else {
-        guard let Ok(arg_id) = @strconv.parse?(field) else {
-          _ => raise InvalidFormatField(field)
+        guard (try? @strconv.parse(field)) is Ok(arg_id) else {
+          raise InvalidFormatField(field)
         }
         { ..FormatField::default(), arg_id: Some(arg_id) }
       }
-    i => {
+    Some(i) => {
       let arg_id = match field.substring(end=i) {
         "" => None
         str => {
-          guard let Ok(arg_id) = @strconv.parse?(str) else {
-            _ => raise InvalidFormatField(field)
+          guard (try? @strconv.parse(str)) is Ok(arg_id) else {
+            raise InvalidFormatField(field)
           }
           Some(arg_id)
         }
       }
       let spec = field.substring(start=i + 1)
-      { ..parse_spec!(spec), arg_id, }
+      { ..parse_spec(spec), arg_id, }
     }
   }
 }
 
 ///|
-pub fn Formatter::format!(
+pub fn Formatter::format(
   self : Formatter,
   args : Array[&Formattable]
-) -> String!FormatError {
+) -> String raise FormatError {
   for i, fmt in self.format_specs {
     match self.strings.length() >= 1 {
       true => self.write_string(self.strings.remove(0))
       false => ()
     }
     if fmt.is_empty() {
-      guard let Some(obj) = args.get(i) else {
-        None => raise ArgumentNotFound(arg_id=i.to_string())
+      guard args.get(i) is Some(obj) else {
+        raise ArgumentNotFound(arg_id=i.to_string())
       }
-      self.write_string(obj.format!(None))
+      self.write_string(obj.format(None))
     } else {
-      let field = self.parse_field!(fmt)
-      guard let Some(obj) = args.get(field.arg_id.or(i)) else {
-        None => raise ArgumentNotFound(arg_id=i.to_string())
+      let field = self.parse_field(fmt)
+      guard args.get(field.arg_id.unwrap_or(i)) is Some(obj) else {
+        raise ArgumentNotFound(arg_id=i.to_string())
       }
-      self.write_string(obj.format!(Some(field)))
+      self.write_string(obj.format(Some(field)))
     }
   }
   if not(self.strings.is_empty()) {

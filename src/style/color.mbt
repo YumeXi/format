@@ -1,6 +1,6 @@
 ///|
 fn FgColor::to_idx(self : FgColor) -> Int {
-  match self._ {
+  match self.inner() {
     Color16(color) =>
       match color {
         Black => 30
@@ -26,7 +26,7 @@ fn FgColor::to_idx(self : FgColor) -> Int {
 
 ///|
 fn BgColor::to_idx(self : BgColor) -> Int {
-  match self._ {
+  match self.inner() {
     Color16(color) =>
       match color {
         Black => 40

@@ -58,7 +58,7 @@ fn int64_to_string(n : Int64, type_flag : Char) -> String {
         let bit = (n >> i) & 1
         binary_string += bit.to_string()
       }
-      binary_string.trim_start("0")
+      binary_string.trim_start("0").to_string()
     }
     'o' | 'O' => {
       let mut n = n
@@ -86,7 +86,11 @@ fn int64_to_string(n : Int64, type_flag : Char) -> String {
       }
       while n != 0 {
         let remainder = (n % 16).abs()
-        hex_string += hex_digits[remainder.to_int()].to_string()
+        hex_string += hex_digits
+          .charcode_at(remainder.to_int())
+          .to_char()
+          .unwrap_or_else(fn() { abort("") })
+          .to_string()
         n /= 16
       }
       String::from_array(hex_string.to_array().rev())
@@ -116,10 +120,10 @@ fn int64_to_string(n : Int64, type_flag : Char) -> String {
 
 ///|
 test {
-  inspect!(int64_to_string(12, 'b'), content="1100")
-  inspect!(int64_to_string(-12, 'o'), content="14")
-  inspect!(int64_to_string(32767, 'x'), content="7fff")
-  inspect!(int64_to_string(32767, 'O'), content="77777")
+  inspect(int64_to_string(12, 'b'), content="1100")
+  inspect(int64_to_string(-12, 'o'), content="14")
+  inspect(int64_to_string(32767, 'x'), content="7fff")
+  inspect(int64_to_string(32767, 'O'), content="77777")
 }
 
 ///|
@@ -137,7 +141,7 @@ pub impl Formattable for Int64 with format(self, field) {
       match field.sign {
         Some('+') => if self >= 0 { result = "+" + result }
         Some('-') =>
-          if self < 0 && not(result.starts_with("-")) {
+          if self < 0 && not(result.has_prefix("-")) {
             // Add a negative sign if the result doesn't already have one
             result = "-" + result
           }
@@ -145,7 +149,7 @@ pub impl Formattable for Int64 with format(self, field) {
         None => ()
       }
       match field.precision {
-        Some(0) => result = result.split(".").collect()[0]
+        Some(0) => result = result.split(".").collect()[0].to_string()
         Some(precision) => result = result + "." + "0".repeat(precision)
         _ => ()
       }
@@ -168,12 +172,12 @@ pub impl Formattable for Int64 with format(self, field) {
 
 ///| @coverage.skip
 pub impl Formattable for Int with format(self, field) {
-  self.to_int64().format!(field)
+  Formattable::format(self.to_int64(), field)
 }
 
 ///| @coverage.skip
 pub impl Formattable for UInt with format(self, field) {
-  self.to_int64().format!(field)
+  Formattable::format(self.to_int64(), field)
 }
 
 ///|
@@ -189,7 +193,7 @@ pub impl Formattable for UInt64 with format(self, field) {
         _ => ()
       }
       match field.precision {
-        Some(0) => result = result.split(".").collect()[0]
+        Some(0) => result = result.split(".").collect()[0].to_string()
         Some(precision) => result = result + "." + "0".repeat(precision)
         _ => ()
       }
@@ -251,7 +255,7 @@ fn double_to_string(n : Double, type_flag : Char) -> String {
 }
 
 ///|
-pub impl Formattable for Double with format!(self, field) {
+pub impl Formattable for Double with format(self, field) raise {
   let mut result = self.to_string()
   match field {
     Some(field) => {
@@ -264,14 +268,14 @@ pub impl Formattable for Double with format!(self, field) {
       match field.sign {
         Some('+') => if self >= 0 { result = "+" + result }
         Some('-') =>
-          if self < 0 && not(result.starts_with("-")) {
+          if self < 0 && not(result.has_prefix("-")) {
             result = "-" + result
           }
         Some(_) => abort("unreachable")
         None => ()
       }
       match field.precision {
-        Some(0) => result = result.split(".").collect()[0]
+        Some(0) => result = result.split(".").collect()[0].to_string()
         Some(precision) => {
           let count = count_digit(self)
           if count == 0 {
@@ -303,7 +307,7 @@ pub impl Formattable for Double with format!(self, field) {
 
 ///| @coverage.skip
 pub impl Formattable for Float with format(self, field) {
-  self.to_double().format!(field)
+  Formattable::format(self, field)
 }
 
 ///|
@@ -323,14 +327,14 @@ pub impl Formattable for BigInt with format(self, field) {
       match field.sign {
         Some('+') => if self >= 0 { result = "+" + result }
         Some('-') =>
-          if self < 0 && not(result.starts_with("-")) {
+          if self < 0 && not(result.has_prefix("-")) {
             result = "-" + result
           }
         Some(_) => abort("unreachable")
         None => ()
       }
       match field.precision {
-        Some(0) => result = result.split(".").collect()[0]
+        Some(0) => result = result.split(".").collect()[0].to_string()
         Some(precision) => result = result + "." + "0".repeat(precision)
         _ => ()
       }

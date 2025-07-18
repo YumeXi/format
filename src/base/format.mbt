@@ -25,19 +25,19 @@
 ///   inspect!(try_format!("Hello {1}, {0:0>3d}!", args), content="Hello world, 042!")
 /// }
 /// ```
-pub fn try_format!(
+pub fn try_format(
   format_string : String,
   args : Array[&Formattable]
-) -> String!FormatError {
+) -> String raise FormatError {
   let formatter = Formatter::new()
-  formatter.init!(format_string)
-  formatter.format!(args)
+  formatter.init(format_string)
+  formatter.format(args)
 }
 
 ///|
 /// @alert unsafe "Panic if receiving an error"
 pub fn format(format_string : String, args : Array[&Formattable]) -> String {
-  match try_format?(format_string, args) {
+  match (try? try_format(format_string, args)) {
     Ok(result) => result
     Err(err) => abort(err.to_string())
   }

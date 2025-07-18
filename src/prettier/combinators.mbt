@@ -12,7 +12,7 @@ pub fn text(s : String) -> Doc {
 }
 
 ///|
-pub fn content[T : Show](v : T) -> Doc {
+pub fn[T : Show] content(v : T) -> Doc {
   text(v.to_string())
 }
 
@@ -23,7 +23,7 @@ pub fn nest(indent~ : Int = 2, doc : Doc) -> Doc {
 
 ///|
 pub fn concat(array : Array[&Pretty]) -> Doc {
-  array[:-1].rev_fold(init=array.last().or(empty()).prettify(), fn(doc, elem) {
+  array[:-1].rev_fold(init=array.last().unwrap_or(empty()).prettify(), fn(doc, elem) {
     elem.prettify() + doc
   })
 }
@@ -31,7 +31,7 @@ pub fn concat(array : Array[&Pretty]) -> Doc {
 ///|
 test {
   let array : Array[&Pretty] = [text("hello"), break_with(", "), text("world")]
-  assert_eq!(
+  assert_eq(
     concat(array),
     Concat(text("hello"), Concat(Break(", "), text("world"))),
   )
@@ -95,9 +95,9 @@ pub fn enclose(
   }
   let style = @style.fg(foreground)
   if colorized_doc {
-    (style | surround(open, doc, close)).prettify()
+    Pretty::prettify(style.compose(surround(open, doc, close)))
   } else {
-    surround(style | open, doc, style | close).prettify()
+    Pretty::prettify(surround(style.compose(open), doc, style.compose(close)))
   }
 }
 
@@ -116,5 +116,5 @@ pub fn colorize(doc : &Pretty, foreground? : &@style.ToColor) -> Doc {
     }
   }
   let style = @style.fg(foreground)
-  (style | doc).prettify()
+  Pretty::prettify(style.compose(doc))
 }

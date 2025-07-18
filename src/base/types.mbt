@@ -1,6 +1,6 @@
 ///|
 pub(open) trait Formattable: Show {
-  format(Self, FormatField?) -> String!FormatError
+  format(Self, FormatField?) -> String raise FormatError = _
 }
 
 ///| @coverage.skip
@@ -16,7 +16,7 @@ pub struct Formatter {
 } derive(Show)
 
 ///|
-pub type! FormatError {
+pub suberror FormatError {
   ArgumentNotFound(arg_id~ : String)
   UnmatchedCurlyBrace(Char)
   InvalidFormatField(String)
