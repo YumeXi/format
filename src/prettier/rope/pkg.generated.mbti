@@ -1,0 +1,39 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "YumeXi/format/prettier/rope"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn from_string(String) -> Rope
+
+pub fn hidden_string(String) -> Rope
+
+// Errors
+
+// Types and methods
+pub struct Leaf {
+  buf : String
+  start : Int
+  end : Int
+} derive(Default, Eq, @debug.Debug)
+
+pub struct Node {
+  left : Rope?
+  right : Rope?
+} derive(Default, Eq, @debug.Debug)
+
+pub(all) enum Rope {
+  Leaf(Leaf, len~ : Int)
+  Node(Node, len~ : Int)
+} derive(Eq, @debug.Debug)
+pub fn Rope::length(Self) -> Int
+pub fn Rope::op_add(Self, Self) -> Self
+pub impl Default for Rope
+pub impl Show for Rope
+
+// Type aliases
+
+// Traits
+

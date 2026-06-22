@@ -1,5 +1,5 @@
 ///|
-pub fn render_style(self : Style) -> (String, String) {
+pub fn Style::render_style(self : Style) -> (String, String) {
   let start = StringBuilder::new()
   start.write_string("\x1b[")
   let end = StringBuilder::new()
@@ -20,21 +20,21 @@ pub fn render_style(self : Style) -> (String, String) {
   }
   match self.fg {
     Some(FgColor(Color16(color))) => {
-      if not(self.bg.is_empty()) {
+      if self.bg is Some(_) {
         start.write_char(';')
       }
       start.write_object(FgColor(Color16(color)).to_idx())
       end.write_string("\x1b[39m")
     }
     Some(FgColor(Color256(idx))) => {
-      if not(self.bg.is_empty()) {
+      if self.bg is Some(_) {
         start.write_char(';')
       }
       start.write_string("38;5;\{idx}m")
       end.write_string("\x1b[39m")
     }
     Some(FgColor(TrueColor(r, g, b))) => {
-      if not(self.bg.is_empty()) {
+      if self.bg is Some(_) {
         start.write_char(';')
       }
       start.write_string("38;2;\{r};\{g};\{b}m")
@@ -45,7 +45,7 @@ pub fn render_style(self : Style) -> (String, String) {
   match self.emphasis {
     [] => ()
     [_, ..] => {
-      if not(self.bg.is_empty() && self.fg.is_empty()) {
+      if self.bg is Some(_) || self.fg is Some(_) {
         start.write_char(';')
       }
       let (begin_idx, end_idx) = self.emphasis[0].to_idx()
@@ -61,13 +61,4 @@ pub fn render_style(self : Style) -> (String, String) {
   }
   start.write_char('m')
   (start.to_string(), end.to_string())
-}
-
-///|
-impl[T : @base.Formattable] @base.Formattable for StyledArg[T] with format(
-  self,
-  field
-) {
-  let (start, end) = self.0.render_style()
-  start + self.1.format(field) + end
 }

@@ -19,15 +19,15 @@
 ///
 /// Example:
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// test "try_format" {
 ///   let args : Array[&Formattable] = [(42 : Int), ("world" : String)]
-///   inspect!(try_format!("Hello {1}, {0:0>3d}!", args), content="Hello world, 042!")
+///   inspect(try_format("Hello {1}, {0:0>3d}!", args), content="Hello world, 042!")
 /// }
 /// ```
 pub fn try_format(
   format_string : String,
-  args : Array[&Formattable]
+  args : Array[&Formattable],
 ) -> String raise FormatError {
   let formatter = Formatter::new()
   formatter.init(format_string)
@@ -39,11 +39,12 @@ pub fn try_format(
 pub fn format(format_string : String, args : Array[&Formattable]) -> String {
   match (try? try_format(format_string, args)) {
     Ok(result) => result
-    Err(err) => abort(err.to_string())
+    Err(err) => abort(Show::to_string(err))
   }
 }
 
-///| @coverage.skip
+///|
+/// @coverage.skip
 pub fn print(format_string : String, args : Array[&Formattable]) -> Unit {
   println(format(format_string, args))
 }

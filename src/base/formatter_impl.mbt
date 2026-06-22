@@ -27,7 +27,7 @@ fn align(str : String, width~ : Int, align~ : Align, fill~ : Char) -> String {
 }
 
 ///|
-pub impl Formattable for String with format(self, field) {
+pub impl Formattable for String with fn format(self, field) {
   match field {
     Some(field) =>
       match field.align {
@@ -53,12 +53,12 @@ fn int64_to_string(n : Int64, type_flag : Char) -> String {
       if n == 0 {
         return "0".to_string()
       }
-      for i in -64..=0 {
+      for i in -64..<=0 {
         let i = -i
         let bit = (n >> i) & 1
         binary_string += bit.to_string()
       }
-      binary_string.trim_start("0").to_string()
+      binary_string.trim_start(chars="0").to_owned()
     }
     'o' | 'O' => {
       let mut n = n
@@ -86,8 +86,7 @@ fn int64_to_string(n : Int64, type_flag : Char) -> String {
       }
       while n != 0 {
         let remainder = (n % 16).abs()
-        hex_string += hex_digits
-          .charcode_at(remainder.to_int())
+        hex_string += hex_digits[remainder.to_int()]
           .to_char()
           .unwrap_or_else(fn() { abort("") })
           .to_string()
@@ -127,7 +126,7 @@ test {
 }
 
 ///|
-pub impl Formattable for Int64 with format(self, field) {
+pub impl Formattable for Int64 with fn format(self, field) {
   let mut result = self.to_string()
   match field {
     Some(field) => {
@@ -141,7 +140,7 @@ pub impl Formattable for Int64 with format(self, field) {
       match field.sign {
         Some('+') => if self >= 0 { result = "+" + result }
         Some('-') =>
-          if self < 0 && not(result.has_prefix("-")) {
+          if self < 0 && !result.has_prefix("-") {
             // Add a negative sign if the result doesn't already have one
             result = "-" + result
           }
@@ -170,18 +169,20 @@ pub impl Formattable for Int64 with format(self, field) {
   result
 }
 
-///| @coverage.skip
-pub impl Formattable for Int with format(self, field) {
-  Formattable::format(self.to_int64(), field)
-}
-
-///| @coverage.skip
-pub impl Formattable for UInt with format(self, field) {
+///|
+/// @coverage.skip
+pub impl Formattable for Int with fn format(self, field) {
   Formattable::format(self.to_int64(), field)
 }
 
 ///|
-pub impl Formattable for UInt64 with format(self, field) {
+/// @coverage.skip
+pub impl Formattable for UInt with fn format(self, field) {
+  Formattable::format(self.to_int64(), field)
+}
+
+///|
+pub impl Formattable for UInt64 with fn format(self, field) {
   let mut result = self.to_string()
   match field {
     Some(field) => {
@@ -246,7 +247,7 @@ fn double_to_string(n : Double, type_flag : Char) -> String {
         exponent -= 1
       }
       let mantissa = "\{n}"
-      let mantissa = mantissa.trim_end("0").trim_end(".")
+      let mantissa = mantissa.trim_end(chars="0").trim_end(chars=".")
       let sign = if negative { "-" } else { "" }
       "\{sign}\{mantissa}e\{exponent}"
     }
@@ -255,7 +256,7 @@ fn double_to_string(n : Double, type_flag : Char) -> String {
 }
 
 ///|
-pub impl Formattable for Double with format(self, field) raise {
+pub impl Formattable for Double with fn format(self, field) raise {
   let mut result = self.to_string()
   match field {
     Some(field) => {
@@ -268,7 +269,7 @@ pub impl Formattable for Double with format(self, field) raise {
       match field.sign {
         Some('+') => if self >= 0 { result = "+" + result }
         Some('-') =>
-          if self < 0 && not(result.has_prefix("-")) {
+          if self < 0 && !result.has_prefix("-") {
             result = "-" + result
           }
         Some(_) => abort("unreachable")
@@ -305,13 +306,14 @@ pub impl Formattable for Double with format(self, field) raise {
   result
 }
 
-///| @coverage.skip
-pub impl Formattable for Float with format(self, field) {
+///|
+/// @coverage.skip
+pub impl Formattable for Float with fn format(self, field) {
   Formattable::format(self, field)
 }
 
 ///|
-pub impl Formattable for BigInt with format(self, field) {
+pub impl Formattable for BigInt with fn format(self, field) {
   let mut result = self.to_string()
   match field {
     Some(field) => {
@@ -327,7 +329,7 @@ pub impl Formattable for BigInt with format(self, field) {
       match field.sign {
         Some('+') => if self >= 0 { result = "+" + result }
         Some('-') =>
-          if self < 0 && not(result.has_prefix("-")) {
+          if self < 0 && !result.has_prefix("-") {
             result = "-" + result
           }
         Some(_) => abort("unreachable")

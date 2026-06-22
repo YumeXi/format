@@ -1,0 +1,87 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "YumeXi/format/style"
+
+import {
+  "moonbitlang/core/debug",
+  "moonbitlang/core/quickcheck",
+}
+
+// Values
+pub fn[T : ToColor] bg(T) -> Style
+
+pub fn emph(Emphasis) -> Style
+
+pub fn[T : ToColor] fg(T) -> Style
+
+// Errors
+
+// Types and methods
+pub struct BgColor(Color) derive(@debug.Debug)
+
+pub(all) enum Color {
+  Color16(Color16)
+  Color256(Int)
+  TrueColor(Int, Int, Int)
+} derive(Eq, @debug.Debug)
+pub impl ToColor for Color
+
+pub(all) enum Color16 {
+  Black
+  Red
+  Green
+  Yellow
+  Blue
+  Magenta
+  Cyan
+  White
+  BrightBlack
+  BrightRed
+  BrightGreen
+  BrightYellow
+  BrightBlue
+  BrightMagenta
+  BrightCyan
+  BrightWhite
+} derive(Eq, @debug.Debug, @quickcheck.Arbitrary)
+pub impl ToColor for Color16
+
+pub(all) enum Emphasis {
+  Bold
+  Faint
+  Italic
+  Underline
+  Blink
+  Inverse
+  Hidden
+  Strikethrough
+} derive(Eq, @debug.Debug)
+
+pub struct FgColor(Color) derive(@debug.Debug)
+
+pub(all) struct Style {
+  bg : BgColor?
+  fg : FgColor?
+  emphasis : Array[Emphasis]
+} derive(Default, @debug.Debug)
+pub fn[T : Styled] Style::compose(Self, T) -> StyledArg[T]
+pub fn Style::render_style(Self) -> (String, String)
+pub impl Styled for Style
+
+pub struct StyledArg[T](Style, T) derive(@debug.Debug)
+pub fn[T : Styled] StyledArg::compose(Self[Style], T) -> Self[T]
+pub fn[T] StyledArg::with_value(Self[Style], T) -> Self[T]
+pub impl[T] Styled for StyledArg[T]
+
+// Type aliases
+
+// Traits
+pub(open) trait Styled {
+  fn style(Self) -> Style
+}
+
+pub trait ToColor {
+  fn to_color(Self) -> Color
+}
+pub impl ToColor for Int
+pub impl ToColor for (Int, Int, Int)
+

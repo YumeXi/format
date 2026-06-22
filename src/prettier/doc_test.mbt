@@ -16,11 +16,12 @@ test {
   )
 }
 
-///| Reference: https://github.com/Yoorkin/prettyprinter/blob/main/example/tree.mbt
+///|
+/// Reference: https://github.com/Yoorkin/prettyprinter/blob/main/example/tree.mbt
 enum Tree {
   Leaf(Int)
   Node(Array[Tree])
-} derive(Show)
+} derive(Debug)
 
 ///|
 test "show tree 1" {
@@ -87,24 +88,22 @@ test "show tree 1" {
   )
 }
 
-///| Reference: https://homepages.inf.ed.ac.uk/wadler/papers/prettier/prettier.pdf
+///|
+/// Reference: https://homepages.inf.ed.ac.uk/wadler/papers/prettier/prettier.pdf
 test "show tree 2" {
   enum Tree {
     Node(String, Array[Tree])
   }
-
-  letrec show_tree = fn (self : Tree) -> Doc {
+  letrec show_tree = fn(self : Tree) -> Doc {
     let Node(s, ts) = self
     group(nest(indent=s.length(), text(s) + show_bracket(ts[:])))
   }
-
   and show_bracket = fn(ts : ArrayView[Tree]) -> Doc {
     match ts {
       [] => empty()
       ts => text("[") + nest(indent=1, show_trees(ts)) + text("]")
     }
   }
-
   and show_trees = fn(ts : ArrayView[Tree]) -> Doc {
     match ts {
       [t] => show_tree(t)

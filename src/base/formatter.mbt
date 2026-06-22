@@ -1,17 +1,18 @@
-///| @coverage.skip
+///|
+/// @coverage.skip
 pub fn Formatter::new() -> Formatter {
   { builder: StringBuilder::new(), strings: [], format_specs: [] }
 }
 
 ///|
-fn write_string(self : Formatter, string : String) -> Unit {
+fn Formatter::write_string(self : Formatter, string : String) -> Unit {
   self.builder.write_string(string)
 }
 
 ///|
 pub fn Formatter::init(
   self : Formatter,
-  format_string : String
+  format_string : String,
 ) -> Unit raise FormatError {
   // TODO: Rewrite in a more functional style
   let temp_builder = StringBuilder::new()
@@ -42,7 +43,7 @@ pub fn Formatter::init(
   if iterating_spec {
     raise UnmatchedCurlyBrace('{')
   }
-  if not(self.builder.is_empty()) {
+  if !self.builder.is_empty() {
     let string = self.builder.to_string()
     self.strings.push(string)
     self.builder.reset()
@@ -50,7 +51,7 @@ pub fn Formatter::init(
 }
 
 ///|
-fn reset(self : Formatter) -> Unit {
+fn Formatter::reset(self : Formatter) -> Unit {
   self.builder.reset()
   self.strings.clear()
   self.format_specs.clear()
@@ -69,9 +70,9 @@ fn reset(self : Formatter) -> Unit {
 ///  - `precision` : Precision of decimal
 ///  - `type` : Type specifier (e.g., 'x' for hexadecimal, 'e' for
 /// scientific notation)
-fn parse_field(
+fn Formatter::parse_field(
   self : Formatter,
-  field : String
+  field : String,
 ) -> FormatField raise FormatError {
   self |> ignore
   if field.is_blank() {
@@ -209,7 +210,7 @@ fn parse_field(
 ///|
 pub fn Formatter::format(
   self : Formatter,
-  args : Array[&Formattable]
+  args : Array[&Formattable],
 ) -> String raise FormatError {
   for i, fmt in self.format_specs {
     match self.strings.length() >= 1 {
@@ -229,14 +230,14 @@ pub fn Formatter::format(
       self.write_string(obj.format(Some(field)))
     }
   }
-  if not(self.strings.is_empty()) {
+  if !self.strings.is_empty() {
     self.builder.write_string(self.strings.remove(0))
   }
   self.collect()
 }
 
 ///|
-fn collect(self : Formatter) -> String {
+fn Formatter::collect(self : Formatter) -> String {
   let string = self.builder.to_string()
   self.builder.reset()
   string

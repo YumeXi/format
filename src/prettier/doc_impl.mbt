@@ -1,65 +1,65 @@
 ///|
-pub impl Pretty for Doc with prettify(self) {
+pub impl Pretty for Doc with fn prettify(self) {
   self
 }
 
 ///|
-pub impl Pretty for String with prettify(self) {
+pub impl Pretty for String with fn prettify(self) {
   text(self)
 }
 
 ///|
-pub impl Pretty for @rope.Rope with prettify(self) {
+pub impl Pretty for @rope.Rope with fn prettify(self) {
   Text(self)
 }
 
 ///|
-pub impl Pretty for Int with prettify(self) {
+pub impl Pretty for Int with fn prettify(self) {
   content(self)
 }
 
 ///|
-pub impl Pretty for Bool with prettify(self) {
+pub impl Pretty for Bool with fn prettify(self) {
   content(self)
 }
 
 ///|
-pub impl Pretty for Float with prettify(self) {
+pub impl Pretty for Float with fn prettify(self) {
   content(self)
 }
 
 ///|
-pub impl Pretty for Double with prettify(self) {
+pub impl Pretty for Double with fn prettify(self) {
   content(self)
 }
 
 ///|
-pub impl Pretty for Char with prettify(self) {
+pub impl Pretty for Char with fn prettify(self) {
   content(self)
 }
 
 ///|
-pub impl Pretty for Unit with prettify(_) {
+pub impl Pretty for Unit with fn prettify(_) {
   text("()")
 }
 
 ///|
-pub impl Pretty for Int64 with prettify(self) {
+pub impl Pretty for Int64 with fn prettify(self) {
   content(self)
 }
 
 ///|
-pub impl Pretty for UInt64 with prettify(self) {
+pub impl Pretty for UInt64 with fn prettify(self) {
   content(self)
 }
 
 ///|
-pub impl Pretty for UInt with prettify(self) {
+pub impl Pretty for UInt with fn prettify(self) {
   content(self)
 }
 
 ///|
-pub impl[T : Pretty] Pretty for T? with prettify(self) {
+pub impl[T : Pretty] Pretty for T? with fn prettify(self) {
   match self {
     Some(x) => surround("Some(", x.prettify(), ")")
     None => text("None")
@@ -67,12 +67,12 @@ pub impl[T : Pretty] Pretty for T? with prettify(self) {
 }
 
 ///|
-pub impl[T : Pretty] Pretty for Array[T] with prettify(self) {
+pub impl[T : Pretty] Pretty for Array[T] with fn prettify(self) {
   surround("[", intersperse(text(","), self.map(x => x.prettify())), "]")
 }
 
 ///|
-pub impl[T : Pretty] Pretty for FixedArray[T] with prettify(self) {
+pub impl[T : Pretty] Pretty for FixedArray[T] with fn prettify(self) {
   surround(
     "[",
     intersperse(text(","), self.iter().map(x => x.prettify()).collect()),
@@ -81,9 +81,7 @@ pub impl[T : Pretty] Pretty for FixedArray[T] with prettify(self) {
 }
 
 ///|
-pub impl[T : Pretty, E : Pretty] Pretty for Result[T, E] with prettify(
-  self
-) {
+pub impl[T : Pretty, E : Pretty] Pretty for Result[T, E] with fn prettify(self) {
   match self {
     Ok(x) => surround("Ok(", x, ")")
     Err(e) => surround("Err(", e.prettify(), ")")
@@ -91,7 +89,7 @@ pub impl[T : Pretty, E : Pretty] Pretty for Result[T, E] with prettify(
 }
 
 ///|
-pub impl[A : Pretty, B : Pretty] Pretty for Map[A, B] with prettify(self) {
+pub impl[A : Pretty, B : Pretty] Pretty for Map[A, B] with fn prettify(self) {
   let entries = self
     .iter()
     .map(fn(ab) {
@@ -107,7 +105,7 @@ pub impl[A : Pretty, B : Pretty] Pretty for Map[A, B] with prettify(self) {
 }
 
 ///|
-pub impl Pretty for Json with prettify(self) {
+pub impl Pretty for Json with fn prettify(self) {
   match self {
     Null => text("null")
     True => text("true")
@@ -118,17 +116,15 @@ pub impl Pretty for Json with prettify(self) {
     Object(obj) => {
       let entries = obj
         .iter()
-        .map(
-          pair => {
-            let (k, v) = pair
-            group(
-              surround("\"", Pretty::prettify(k), "\"") +
-              text(":") +
-              space() +
-              Pretty::prettify(v),
-            )
-          }
-        )
+        .map(pair => {
+          let (k, v) = pair
+          group(
+            surround("\"", Pretty::prettify(k), "\"") +
+            text(":") +
+            space() +
+            Pretty::prettify(v),
+          )
+        })
       surround(
         "{",
         nest(space() + intersperse(text(",") + space(), entries.collect())) +
@@ -161,17 +157,17 @@ test {
 }
 
 ///|
-pub impl[T : Pretty] Pretty for @style.StyledArg[T] with prettify(self) {
-  let (start, end) = self.inner().0.render_style()
+pub impl[T : Pretty] Pretty for @style.StyledArg[T] with fn prettify(self) {
+  let (start, end) = self.0.render_style()
   surround(
     @rope.hidden_string(start),
-    self.inner().1.prettify(),
+    self.1.prettify(),
     @rope.hidden_string(end),
   )
 }
 
 ///|
-impl @style.Styled for Doc with style(_self) {
+impl @style.Styled for Doc with fn style(_self) {
   { bg: None, fg: None, emphasis: [] }
 }
 

@@ -3,28 +3,23 @@ pub(all) struct Style {
   bg : BgColor?
   fg : FgColor?
   emphasis : Array[Emphasis]
-} derive(Show, Default)
+} derive(Debug, Default)
 
 ///|
 pub(open) trait Styled {
-  style(Self) -> Style = _
+  fn style(Self) -> Style
 }
 
 ///|
-pub type StyledArg[T] (Style, T) derive(Show)
+pub struct StyledArg[T](Style, T) derive(Debug)
 
 ///|
-pub impl Styled for Style with style(self) {
+pub impl Styled for Style with fn style(self) {
   self
 }
 
 ///|
-impl Styled with style(_) {
-  { bg: None, fg: None, emphasis: [] }
-}
-
-///|
-pub impl[T] Styled for StyledArg[T] with style(self) {
+pub impl[T] Styled for StyledArg[T] with fn style(self) {
   self.0
 }
 
@@ -46,20 +41,20 @@ pub(all) enum Color16 {
   BrightMagenta
   BrightCyan
   BrightWhite
-} derive(Show, Eq, Arbitrary)
+} derive(Debug, Eq, Arbitrary)
 
 ///|
 pub(all) enum Color {
   Color16(Color16)
   Color256(Int)
   TrueColor(Int, Int, Int)
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
-pub type FgColor Color derive(Show)
+pub struct FgColor(Color) derive(Debug)
 
 ///|
-pub type BgColor Color derive(Show)
+pub struct BgColor(Color) derive(Debug)
 
 ///|
 pub(all) enum Emphasis {
@@ -71,16 +66,16 @@ pub(all) enum Emphasis {
   Inverse
   Hidden
   Strikethrough
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 pub fn[T : ToColor] fg(color : T) -> Style {
-  { bg: None, fg: Some(color.to_color()), emphasis: [] }
+  { bg: None, fg: Some(FgColor(color.to_color())), emphasis: [] }
 }
 
 ///|
 pub fn[T : ToColor] bg(color : T) -> Style {
-  { bg: Some(color.to_color()), fg: None, emphasis: [] }
+  { bg: Some(BgColor(color.to_color())), fg: None, emphasis: [] }
 }
 
 ///|
@@ -90,5 +85,10 @@ pub fn emph(emphasis : Emphasis) -> Style {
 
 ///|
 pub trait ToColor {
-  to_color(Self) -> Color
+  fn to_color(Self) -> Color
+}
+
+///|
+impl Styled for Double with fn style(self) {
+  { bg: None, fg: None, emphasis: [] }
 }

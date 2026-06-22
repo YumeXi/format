@@ -1,0 +1,98 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "YumeXi/format/prettier"
+
+import {
+  "YumeXi/format/base",
+  "YumeXi/format/prettier/rope",
+  "YumeXi/format/style",
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn break_with(String) -> Doc
+
+pub fn colorize(&Pretty, foreground? : &@style.ToColor) -> Doc
+
+pub fn concat(Array[&Pretty]) -> Doc
+
+pub fn[T : Show] content(T) -> Doc
+
+pub fn empty() -> Doc
+
+pub fn enclose(&Pretty, &Pretty, &Pretty, foreground? : &@style.ToColor, colorized_doc? : Bool) -> Doc
+
+pub fn group(Doc) -> Doc
+
+pub let hardline : Doc
+
+pub fn intersperse(Doc, Array[Doc]) -> Doc
+
+pub fn line() -> Doc
+
+pub fn nest(indent? : Int, Doc) -> Doc
+
+pub fn prettify(String, Array[&Pretty]) -> String
+
+pub fn space() -> Doc
+
+pub fn surround(&Pretty, &Pretty, &Pretty) -> Doc
+
+pub fn text(String) -> Doc
+
+pub fn try_prettify(String, Array[&Pretty]) -> String raise @base.FormatError
+
+// Errors
+
+// Types and methods
+pub(all) enum Doc {
+  Empty
+  Break(String)
+  Text(@rope.Rope)
+  Concat(Doc, Doc)
+  Group(Doc)
+  Nest(Int, Doc)
+} derive(Default, Eq, Show)
+pub fn Doc::print(Self, width? : Int) -> String
+pub impl @base.Formattable for Doc
+pub impl Pretty for Doc
+pub impl Add for Doc
+
+pub enum Mode {
+  Flat
+  Break
+} derive(Eq, Show)
+
+type SimplifiedDoc derive(@debug.Debug)
+
+// Type aliases
+
+// Traits
+pub(open) trait Pretty {
+  fn prettify(Self) -> Doc
+}
+pub impl Pretty for Unit
+pub impl Pretty for Bool
+pub impl Pretty for Char
+pub impl Pretty for Int
+pub impl Pretty for Int64
+pub impl Pretty for UInt
+pub impl Pretty for UInt64
+pub impl Pretty for Float
+pub impl Pretty for Double
+pub impl Pretty for String
+pub impl[T : Pretty] Pretty for T?
+pub impl[T : Pretty, E : Pretty] Pretty for Result[T, E]
+pub impl[T : Pretty] Pretty for FixedArray[T]
+pub impl Pretty for &PrettyFormattable
+pub impl Pretty for @rope.Rope
+pub impl[T : Pretty] Pretty for @style.StyledArg[T]
+pub impl[T : Pretty] Pretty for Array[T]
+pub impl Pretty for Json
+pub impl[A : Pretty, B : Pretty] Pretty for Map[A, B]
+
+pub(open) trait PrettyFormattable : Pretty + @base.Formattable + Show {
+  fn pretty_format(Self, @base.FormatField?) -> Doc raise @base.FormatError
+}
+pub impl @base.Formattable for &PrettyFormattable
+pub impl Show for &PrettyFormattable
+

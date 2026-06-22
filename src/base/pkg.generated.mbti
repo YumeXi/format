@@ -1,0 +1,59 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "YumeXi/format/base"
+
+import {
+  "moonbitlang/core/bigint",
+  "moonbitlang/core/debug",
+}
+
+// Values
+#callsite(autofill(loc))
+pub fn[T : Show] debug(T, with_loc? : Bool, loc~ : SourceLoc) -> Unit
+
+pub fn format(String, Array[&Formattable]) -> String
+
+pub fn print(String, Array[&Formattable]) -> Unit
+
+pub fn set_debug(enabled~ : Bool) -> Unit
+
+pub fn try_format(String, Array[&Formattable]) -> String raise FormatError
+
+// Errors
+pub suberror FormatError {
+  ArgumentNotFound(arg_id~ : String)
+  UnmatchedCurlyBrace(Char)
+  InvalidFormatField(String)
+} derive(Show, @debug.Debug)
+
+// Types and methods
+type Align derive(Eq, @debug.Debug)
+
+type FormatField derive(Eq, @debug.Debug)
+pub fn FormatField::precision(Self) -> Int?
+pub fn FormatField::width(Self) -> Int
+pub impl Default for FormatField
+
+pub struct Formatter {
+  strings : Array[String]
+  format_specs : Array[String]
+  builder : StringBuilder
+} derive(@debug.Debug)
+pub fn Formatter::format(Self, Array[&Formattable]) -> String raise FormatError
+pub fn Formatter::init(Self, String) -> Unit raise FormatError
+pub fn Formatter::new() -> Self
+
+// Type aliases
+
+// Traits
+pub(open) trait Formattable : Show {
+  fn format(Self, FormatField?) -> String raise FormatError = _
+}
+pub impl Formattable for Int
+pub impl Formattable for Int64
+pub impl Formattable for UInt
+pub impl Formattable for UInt64
+pub impl Formattable for Float
+pub impl Formattable for Double
+pub impl Formattable for String
+pub impl Formattable for @bigint.BigInt
+

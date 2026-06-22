@@ -17,13 +17,16 @@ pub fn[T : Show] content(v : T) -> Doc {
 }
 
 ///|
-pub fn nest(indent~ : Int = 2, doc : Doc) -> Doc {
+pub fn nest(indent? : Int = 2, doc : Doc) -> Doc {
   Nest(indent, doc)
 }
 
 ///|
 pub fn concat(array : Array[&Pretty]) -> Doc {
-  array[:-1].rev_fold(init=array.last().unwrap_or(empty()).prettify(), fn(doc, elem) {
+  array[:-1].rev_fold(init=array.last().unwrap_or(empty()).prettify(), fn(
+    doc,
+    elem,
+  ) {
     elem.prettify() + doc
   })
 }
@@ -79,7 +82,7 @@ pub fn enclose(
   doc : &Pretty,
   close : &Pretty,
   foreground? : &@style.ToColor,
-  colorized_doc~ : Bool = false
+  colorized_doc? : Bool = false,
 ) -> Doc {
   let foreground = match foreground {
     Some(c) => @style.ToColor::to_color(c)
@@ -97,7 +100,12 @@ pub fn enclose(
   if colorized_doc {
     Pretty::prettify(style.compose(surround(open, doc, close)))
   } else {
-    Pretty::prettify(surround(style.compose(open), doc, style.compose(close)))
+    let (start_ansi, end_ansi) = style.render_style()
+    surround(
+      text(start_ansi) + open.prettify() + text(end_ansi),
+      doc,
+      text(start_ansi) + close.prettify() + text(end_ansi),
+    )
   }
 }
 
@@ -116,5 +124,6 @@ pub fn colorize(doc : &Pretty, foreground? : &@style.ToColor) -> Doc {
     }
   }
   let style = @style.fg(foreground)
-  Pretty::prettify(style.compose(doc))
+  let (start_ansi, end_ansi) = style.render_style()
+  text(start_ansi) + doc.prettify() + text(end_ansi)
 }

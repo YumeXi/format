@@ -8,27 +8,27 @@ pub struct Leaf {
   buf : String
   start : Int
   end : Int
-} derive(Default, Show, Eq)
+} derive(Default, Debug, Eq)
 
 ///|
 pub struct Node {
   left : Rope?
   right : Rope?
-} derive(Default, Show, Eq)
+} derive(Default, Debug, Eq)
 
 ///|
 pub(all) enum Rope {
   Leaf(Leaf, len~ : Int)
   Node(Node, len~ : Int)
-} derive(Eq)
+} derive(Eq, Debug)
 
 ///|
-pub impl Default for Rope with default() {
+pub impl Default for Rope with fn default() {
   Leaf(Leaf::default(), len=0)
 }
 
 ///|
-pub impl Show for Rope with output(self, logger) {
+pub impl Show for Rope with fn output(self, logger) {
   match self {
     Leaf(leaf, ..) => Logger::write_string(logger, leaf.buf)
     Node(node, ..) => {
@@ -39,7 +39,7 @@ pub impl Show for Rope with output(self, logger) {
 }
 
 ///|
-pub fn op_add(self : Rope, other : Rope) -> Rope {
+pub fn Rope::op_add(self : Rope, other : Rope) -> Rope {
   match (self, other) {
     (Node(_, len=0), _) => other
     (_, Node(_, len=0)) => self
@@ -75,7 +75,7 @@ pub fn from_string(buf : String) -> Rope {
 }
 
 ///|
-pub fn length(self : Rope) -> Int {
+pub fn Rope::length(self : Rope) -> Int {
   match self {
     Leaf(_, len~) => len
     Node(_, len~) => len

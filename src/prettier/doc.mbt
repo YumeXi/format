@@ -8,10 +8,10 @@ enum SimplifiedDoc {
   Nil
   Text(@rope.Rope, SimplifiedDoc)
   Line(Int, SimplifiedDoc)
-} derive(Show)
+} derive(Debug)
 
 ///|
-fn to_string(self : SimplifiedDoc) -> String {
+fn SimplifiedDoc::to_string(self : SimplifiedDoc) -> String {
   match self {
     Nil => ""
     Text(s, doc) => s.to_string() + doc.to_string()
@@ -20,12 +20,12 @@ fn to_string(self : SimplifiedDoc) -> String {
 }
 
 ///|
-pub impl @base.Formattable for Doc with format(self, field) {
+pub impl @base.Formattable for Doc with fn format(self, field) {
   simplify(field.unwrap_or_default().width(), 0, [(0, Flat, Group(self))]).to_string()
 }
 
 ///|
-pub impl Add for Doc with op_add(self, other) {
+pub impl Add for Doc with fn add(self, other) {
   Concat(self, other)
 }
 
@@ -51,7 +51,7 @@ fn fits(width : Int, list : Array[(Int, Mode, Doc)]) -> Bool {
 fn simplify(
   width : Int,
   column : Int,
-  array : Array[(Int, Mode, Doc)]
+  array : Array[(Int, Mode, Doc)],
 ) -> SimplifiedDoc {
   match array {
     [] => Nil
@@ -75,6 +75,6 @@ fn simplify(
 }
 
 ///|
-pub fn Doc::print(self : Doc, width~ : Int = 50) -> String {
+pub fn Doc::print(self : Doc, width? : Int = 50) -> String {
   simplify(width, 0, [(0, Flat, Group(self))]).to_string()
 }

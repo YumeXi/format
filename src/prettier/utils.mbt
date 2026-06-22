@@ -1,7 +1,7 @@
 ///|
 pub fn try_prettify(
   input : String,
-  args : Array[&Pretty]
+  args : Array[&Pretty],
 ) -> String raise @base.FormatError {
   @base.try_format(input, args.map(arg => arg.prettify()))
 }

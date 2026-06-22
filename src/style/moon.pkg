@@ -1,0 +1,7 @@
+import {
+  "YumeXi/format/base",
+}
+
+import {
+  "YumeXi/format/base",
+} for "wbtest"

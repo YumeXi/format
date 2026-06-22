@@ -16,31 +16,31 @@ pub enum Mode {
 
 ///|
 pub(open) trait Pretty {
-  prettify(Self) -> Doc
+  fn prettify(Self) -> Doc
 }
 
 ///|
 pub(open) trait PrettyFormattable: Pretty + @base.Formattable + Show {
-  pretty_format(Self, @base.FormatField?) -> Doc raise @base.FormatError
+  fn pretty_format(Self, @base.FormatField?) -> Doc raise @base.FormatError
 }
 
 ///|
-pub impl Show for &PrettyFormattable with output(self, logger) {
+pub impl Show for &PrettyFormattable with fn output(self, logger) {
   logger.write_object(Pretty::prettify(self))
 }
 
 ///|
-pub impl Show for &PrettyFormattable with to_string(self) {
+pub impl Show for &PrettyFormattable with fn to_string(self) {
   Pretty::prettify(self).to_string()
 }
 
 ///|
-pub impl @base.Formattable for &PrettyFormattable with format(self, f) {
+pub impl @base.Formattable for &PrettyFormattable with fn format(self, f) {
   self.pretty_format(f).format(f)
 }
 
 ///|
 /// @alert unsafe "Panic if error occurs"
-pub impl Pretty for &PrettyFormattable with prettify(self) {
+pub impl Pretty for &PrettyFormattable with fn prettify(self) {
   (try? self.pretty_format(None)).unwrap()
 }
